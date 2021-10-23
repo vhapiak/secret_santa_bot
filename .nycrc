@@ -1,0 +1,13 @@
+{
+  "cache": false,
+  "check-coverage": false,
+  "extension": [
+    ".ts"
+  ],
+  "sourceMap": true,
+  "reporter": [
+    "html"
+  ],
+  "all": true,
+  "instrument": true
+}
