@@ -6,7 +6,7 @@ import { Event } from './event';
 import fs from 'fs';
 import path from 'path';
 
-export class EventsManagetImpl implements EventsManager {
+export class EventsManagerImpl implements EventsManager {
     constructor(root: string) {
         this.directory = path.join(root, 'events');
         if (!fs.existsSync(this.directory)) {
