@@ -2,14 +2,14 @@ import { User } from './user';
 import { UserImpl } from './userImpl';
 import { UsersManager } from './usersManager';
 
-import * as fs from 'fs';
-import * as path from 'path'
+import fs from 'fs';
+import path from 'path'
 
 export class UsersManagerImpl implements UsersManager {
     constructor(root: string) {
         this.directory = path.join(root, 'users');
         if (!fs.existsSync(this.directory)) {
-            fs.mkdirSync(this.directory);
+            fs.mkdirSync(this.directory, {recursive: true});
         }
     }
 

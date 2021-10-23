@@ -1,6 +1,6 @@
 import { User } from './user';
 
-import * as fs from 'fs';
+import fs from 'fs';
 
 export type UserData = {
     id: number;
