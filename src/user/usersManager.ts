@@ -1,4 +1,4 @@
-import { User } from './user';
+import { User, UserId } from './user';
 
 export interface UsersManager {
     /**
@@ -7,7 +7,7 @@ export interface UsersManager {
      * @param id User telegram id
      * @param name User telegram name
      */
-    addUser(id: number, name: string): Promise<User>;
+    addUser(id: UserId, name: string): Promise<User>;
 
     /**
      * @brief Find user in db by telegram id
@@ -16,5 +16,5 @@ export interface UsersManager {
      * 
      * @returns undefined if such user doesn't exist
      */
-    getUser(id: number): Promise<User | undefined>;
+    getUser(id: UserId): Promise<User | undefined>;
 }

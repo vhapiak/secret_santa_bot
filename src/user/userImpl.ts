@@ -1,29 +1,29 @@
-import { User } from './user';
+import { ChatId, User, UserId } from './user';
 
 import fs from 'fs';
 
 export type UserData = {
-    id: number;
+    id: UserId;
     name: string;
-    chatId?: number;
+    chatId?: ChatId;
 }
 
 export class UserImpl implements User {
     constructor(private filepath: string, private data: UserData) {
     }
 
-    getId(): number {
+    getId(): UserId {
         return this.data.id;
     }
     getName(): string {
         return this.data.name;
     }
 
-    getChatId(): number | undefined {
+    getChatId(): ChatId | undefined {
         return this.data.chatId;
     }
 
-    async bindChat(chatId: number): Promise<void> {
+    async bindChat(chatId: ChatId): Promise<void> {
         this.data.chatId = chatId;
         return this.save();
     }
@@ -39,7 +39,7 @@ export class UserImpl implements User {
         );
     }
 
-    static async createUser(filepath: string, id: number, name: string): Promise<User> {
+    static async createUser(filepath: string, id: UserId, name: string): Promise<User> {
         const data: UserData = {
             id: id,
             name: name

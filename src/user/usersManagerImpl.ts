@@ -1,4 +1,4 @@
-import { User } from './user';
+import { User, UserId } from './user';
 import { UserImpl } from './userImpl';
 import { UsersManager } from './usersManager';
 
@@ -13,15 +13,15 @@ export class UsersManagerImpl implements UsersManager {
         }
     }
 
-    async addUser(id: number, name: string): Promise<User> {
+    async addUser(id: UserId, name: string): Promise<User> {
         return UserImpl.createUser(this.makeFilepath(id), id, name);
     }
 
-    async getUser(id: number): Promise<User | undefined> {
+    async getUser(id: UserId): Promise<User | undefined> {
         return UserImpl.readFromFile(this.makeFilepath(id));
     }
 
-    private makeFilepath(id: number): string {
+    private makeFilepath(id: UserId): string {
         return path.join(this.directory, id + '.json');
     }
 

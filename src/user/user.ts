@@ -1,8 +1,11 @@
 
+export type UserId = number;
+export type ChatId = number;
+
 export interface User {
-    getId(): number;
+    getId(): UserId;
     getName(): string;
-    getChatId(): number | undefined;
+    getChatId(): ChatId | undefined;
 
     /**
      * @brief User's telegram chat is unavailable by default,
@@ -10,5 +13,5 @@ export interface User {
      * 
      * @param chatId Telegram chat id for private messaging with user
      */
-    bindChat(chatId: number): Promise<void>;
+    bindChat(chatId: ChatId): Promise<void>;
 }
