@@ -1,0 +1,10 @@
+{
+  "name": "secret_santa",
+  "version": "1.0.0",
+  "description": "Telegram bot to orginize secret santa events",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Viktor Hapiak",
+  "license": "ISC"
+}
