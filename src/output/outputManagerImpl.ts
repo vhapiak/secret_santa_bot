@@ -1,5 +1,6 @@
 import TelegramBot from 'node-telegram-bot-api';
 import { Event, EventState } from '../event/event';
+import { multiline } from '../textBuilder';
 import { ChatId, User } from '../user/user';
 import { UsersManager } from '../user/usersManager';
 import { ErrorMessage, InfoMessage, OutputManager, ResponseMessage } from './outputManager';
@@ -7,29 +8,36 @@ import { ErrorMessage, InfoMessage, OutputManager, ResponseMessage } from './out
 function errorToMessage(error: ErrorMessage): string {
     switch (error) {
         case ErrorMessage.InternalError:
-            return 'Sorry, looks like bot is sick, please, try latter';
+            return `Sorry, looks like bot is sick, please, try latter`;
         case ErrorMessage.AlreadyHasEvent:
             return `This group already has secret santa event`;
         case ErrorMessage.NoEvent:
             return `This group doesn't have active event. You can create new one with /create`;
         case ErrorMessage.PermissionDenied:
-            return 'You are not permitted to execute this operation';
+            return `You are not permitted to execute this operation`;
     }
+}
+
+function helpMessage(): string {
+    return multiline()
+        .append(`Hi, I'm a Secret Santa Bot and I help people with orginizing New Year events.`)
+        .newLine()
+        .newLine(`If you are event participant: just relax, I will send you all important information later.`)
+        .newLine()
+        .newLine(`If you want to orginize new event: just add me to group with participants and type /create there.`)
+        .append(`When all participants will join event you can type /launch to assign target for each participant.`)
+        .newLine()
+        .newLine(`Other usefull commands are:`)
+        .newLine(`/status - to see latest state of event.`)
+        .newLine(`/cancel - to cancel event (participants will be notified about cancelation).`)
+        .newLine(`/finish - to end past event and have possibility to create new one.`)
+        .text()
 }
 
 function infoToMessage(info: InfoMessage): string {
     switch (info) {
         case InfoMessage.Help:
-            return `
-            Hi, I'm a Secret Santa Bot and I help people to orginize New Year events.
-            If you are event participant just relax, I will send you all important information later.
-            If you want to orginize new event - just add me to group with participants and type /create there.
-            When all participants will join event you can type /launch to assign target for each participant.
-            Other usefull commands are:
-            /status - to see latest state of event.
-            /cancel - to cancel event (participants will be notified about cancelation).
-            /finish - to end past event and have possibility to create new one.
-            `;
+            return helpMessage();
     }
 }
 
@@ -82,8 +90,10 @@ export class OutputManagerImpl implements OutputManager {
     }
 
     async sendTarget(chat: ChatId, event: Event, target: User): Promise<void> {
-        const message = `Secret santa event in _${event.getName()}_ has been laucnhed.
-        You should prepare present for [${target.getName()}](tg://user?id=${target.getId()})`;
+        const message = multiline()
+            .append(`Secret santa event in _${event.getName()}_ has been laucnhed.`)
+            .append(`You should prepare present for [${target.getName()}](tg://user?id=${target.getId()})`)
+            .text();
         
         this.bot.sendMessage(
             chat,
@@ -129,17 +139,17 @@ export class OutputManagerImpl implements OutputManager {
             throw new Error('Cannot find owner information');
         }
 
-        let result = `
-        *Secret Santa Event*
-
-        *Owner:* [${owner.getName()}](tg://user?id=${owner.getId()})
-        *Status:* _${status}_
-
-        *Participants:*`;
+        let builder = multiline()
+            .append(`*Secret Santa Event*`)
+            .newLine()
+            .newLine(`*Owner:* [${owner.getName()}](tg://user?id=${owner.getId()})`)
+            .newLine(`*Status:* _${status}_`)
+            .newLine()
+            .newLine(`*Participants:*`);
     
         const participants = event.getParticipants();
         if (participants.length === 0) {
-            result += `_Currently there are no participants :\\(_`;
+            builder.newLine(`_Currently there are no participants :\\(_`);
         }
     
         for (let i = 0; i < participants.length; ++i) {
@@ -147,10 +157,10 @@ export class OutputManagerImpl implements OutputManager {
             if (!user) {
                 throw new Error('Cannot find user information');
             }
-            result += `${i + 1}\\. [${user.getName()}](tg://user?id=${user.getId()})\n`;
+            builder.newLine(`${i + 1}\\. [${user.getName()}](tg://user?id=${user.getId()})\n`);
         }
         
-        return result;
+        return builder.text();
     }
 
     private renderEventButtons(event: Event): TelegramBot.InlineKeyboardButton[] {
