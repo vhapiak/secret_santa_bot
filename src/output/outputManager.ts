@@ -20,6 +20,7 @@ export enum ResponseMessage {
     AlreadyLaunched,
     EventJoined,
     EventLeft,
+    EventCanceled,
 }
 
 export interface OutputManager {
@@ -34,10 +35,18 @@ export interface OutputManager {
      * @brief Updates existing telegram message with new event state
      * 
      * @param chat Telegram chat id with message to update
-     * @param message Telegram message id with event information
+     * @param messageId Telegram message id with event information
      * @param event New event state
      */
-    updateEvent(chat: ChatId, message: number, event: Event): Promise<void>;
+    updateEvent(chat: ChatId, messageId: number, event: Event): Promise<void>;
+
+    /**
+     * @brief Updates existing telegram message with canceled event message
+     * 
+     * @param chat Telegram chat id with message to update
+     * @param messageId Telegram message id with old event information
+     */
+    cancelEvent(chat: ChatId, messageId: number): Promise<void>;
 
     /**
      * @brief Send reaction in response to button click

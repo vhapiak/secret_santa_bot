@@ -54,9 +54,11 @@ function responseToMessage(response: ResponseMessage): string {
         case ResponseMessage.AlreadyLaunched:
             return `Sorry, event already launched. You cannot join/leave it`;
         case ResponseMessage.EventJoined:
-            return 'Your have joined event';
+            return `Your have joined event`;
         case ResponseMessage.EventLeft:
-            return 'Your have left event';
+            return `Your have left event`;
+        case ResponseMessage.EventCanceled:
+            return `This event was canceled`;
     }
 }
 
@@ -133,6 +135,20 @@ export class OutputManagerImpl implements OutputManager {
                 parse_mode: 'MarkdownV2', 
                 reply_markup: {
                     inline_keyboard: [message.buttons]
+                }
+            });
+    }
+
+    async cancelEvent(chat: ChatId, messageId: number): Promise<void> {
+        const message = `_Event canceled_`;
+        this.bot.editMessageText(
+            message, 
+            {
+                chat_id: chat,
+                message_id: messageId,
+                parse_mode: 'MarkdownV2', 
+                reply_markup: {
+                    inline_keyboard: [[]]
                 }
             });
     }
