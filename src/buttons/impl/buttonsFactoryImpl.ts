@@ -8,7 +8,7 @@ export class ButtonsFactoryImpl implements ButtonsFactory {
 
     }
 
-    createButtonProcessor(name: string): Button | undefined {
+    createButton(name: string): Button | undefined {
         switch (name) {
             case 'toogle':
                 return new ToogleButton(this.context);
