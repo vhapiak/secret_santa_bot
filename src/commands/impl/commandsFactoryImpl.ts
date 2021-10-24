@@ -1,6 +1,7 @@
 import { Context } from '../../context';
 import { Command } from '../command';
 import { CommandsFactory } from '../commandsFactory';
+import { CancelCommand } from './cancelCommand';
 import { CreateCommand } from './createCommand';
 import { FinishCommand } from './finishCommand';
 import { HelpCommand } from './helpCommand';
@@ -19,6 +20,8 @@ export class CommandsFactoryImpl implements CommandsFactory {
                 return new CreateCommand(this.context);
             case '/finish':
                 return new FinishCommand(this.context);
+            case '/cancel':
+                return new CancelCommand(this.context);
         }
         return new HelpCommand(this.context);
     }

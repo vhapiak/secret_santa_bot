@@ -42,6 +42,8 @@ function infoToMessage(info: InfoMessage): string {
             return helpMessage();
         case InfoMessage.EventFinished:
             return `Event has finished, I hope it was fun! Now you can /create new event in this chat!`;
+        case InfoMessage.EventCanceled:
+            return `Event has canceled! Now you can /create new event in this chat!`;
     }
 }
 
@@ -99,6 +101,20 @@ export class OutputManagerImpl implements OutputManager {
             .append(`You should prepare present for [${target.getName()}](tg://user?id=${target.getId()})`)
             .text();
         
+        this.bot.sendMessage(
+            chat,
+            message,
+            {
+                parse_mode: 'MarkdownV2'
+            });
+    }
+
+    async sendEventCancelation(chat: ChatId, event: Event): Promise<void> {
+        const message = multiline().
+            append(`Secret Santa event has canceled in group _${event.getName()}_.`)
+            .newLine(`Ignore all previous messages regarding this group.`)
+            .text();
+
         this.bot.sendMessage(
             chat,
             message,

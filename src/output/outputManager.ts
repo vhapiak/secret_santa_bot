@@ -12,6 +12,7 @@ export enum ErrorMessage {
 export enum InfoMessage {
     Help,
     EventFinished,
+    EventCanceled,
 }
 
 export enum ResponseMessage {
@@ -27,6 +28,7 @@ export interface OutputManager {
 
     sendEvent(chat: ChatId, event: Event): Promise<void>;
     sendTarget(chat: ChatId, event: Event, target: User): Promise<void>;
+    sendEventCancelation(chat: ChatId, event: Event): Promise<void>;
 
     /**
      * @brief Updates existing telegram message with new event state
