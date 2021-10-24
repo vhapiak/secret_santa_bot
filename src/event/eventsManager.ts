@@ -14,9 +14,16 @@ export interface EventsManager {
     /**
      * @brief Find event by chat id
      * 
-     * @param id Telegram char id
+     * @param id Telegram chat id
      * 
      * @returns undefined if there is no event attached to chat
      */
     getEvent(id: ChatId): Promise<Event | undefined>;
+
+    /**
+     * @brief Remove event from db
+     * 
+     * @param id Telegram chat id 
+     */
+    removeEvent(id: ChatId): Promise<void>;
 }

@@ -41,6 +41,7 @@ describe('HelpCommand', () => {
             data: ''
         });
 
+        expect(output.sendInfo.called).to.be.true;
         expect(output.sendInfo.lastCall.args[0]).to.be.equal(chatId);
         expect(output.sendInfo.lastCall.args[1]).to.be.equal(InfoMessage.Help);
     }

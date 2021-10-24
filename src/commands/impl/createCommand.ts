@@ -9,7 +9,7 @@ export class CreateCommand implements Command {
 
     async process(message: Message): Promise<Command | undefined> {
         if (await this.context.events.getEvent(message.chat.id)) {
-            this.context.output.sendError(message.chat.id, ErrorMessage.AlreadyHasEvent);
+            await this.context.output.sendError(message.chat.id, ErrorMessage.AlreadyHasEvent);
             return undefined;
         }
 

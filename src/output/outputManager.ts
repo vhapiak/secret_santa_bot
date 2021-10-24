@@ -6,10 +6,12 @@ export enum ErrorMessage {
     NoEvent,
     AlreadyHasEvent,
     PermissionDenied,
+    EventIsNotLaunched,
 }
 
 export enum InfoMessage {
     Help,
+    EventFinished,
 }
 
 export enum ResponseMessage {

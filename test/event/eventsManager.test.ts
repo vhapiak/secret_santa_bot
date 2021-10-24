@@ -17,6 +17,7 @@ describe('EventsManager', () => {
     const filepath = path.join(root, 'events', id + '.json');
 
     const fsStub = sinon.stubObject(fs);
+    const fsPromisesStub = sinon.stubObject(fs.promises);
     const event = sinon.stubInterface<Event>();
     const createEventStub = sinon.default.stub<[string, number, string, number], Promise<Event>>();
     const readFromFileStub = sinon.default.stub<[string], Promise<Event | undefined>>();
@@ -24,6 +25,7 @@ describe('EventsManager', () => {
     before(() => {
         sinon.default.replace(fs, 'existsSync', fsStub.existsSync);
         sinon.default.replace(fs, 'mkdirSync', fsStub.mkdirSync);
+        sinon.default.replace(fs.promises, 'rm', fsPromisesStub.rm);
         sinon.default.replace(EventImpl, 'createEvent', createEventStub);
         sinon.default.replace(EventImpl, 'readFromFile', readFromFileStub);
     });
@@ -35,6 +37,7 @@ describe('EventsManager', () => {
     afterEach(() => {
         fsStub.existsSync.reset();
         fsStub.mkdirSync.reset();
+        fsPromisesStub.rm.reset();
         createEventStub.reset();
         readFromFileStub.reset();
     });
@@ -69,5 +72,15 @@ describe('EventsManager', () => {
         const created = await manager.getEvent(id);
 
         expect(created).to.be.equal(event);
+    });
+
+    it('should remove event from db', async () => {
+        const filepath = path.join(root, 'events', id + '.json');
+
+        const manager = new EventsManagerImpl(root);
+        await manager.removeEvent(id);
+
+        expect(fsPromisesStub.rm.called).to.be.true;
+        expect(fsPromisesStub.rm.lastCall.args[0]).to.be.equal(filepath);
     });
 });

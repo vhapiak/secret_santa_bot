@@ -22,6 +22,10 @@ export class EventsManagerImpl implements EventsManager {
         return EventImpl.readFromFile(this.makeFilepath(id));
     }
 
+    removeEvent(id: ChatId): Promise<void> {
+        return fs.promises.rm(this.makeFilepath(id));
+    }
+
     private makeFilepath(id: ChatId): string {
         return path.join(this.directory, id + '.json');
     }

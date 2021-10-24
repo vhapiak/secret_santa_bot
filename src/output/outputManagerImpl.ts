@@ -15,6 +15,8 @@ function errorToMessage(error: ErrorMessage): string {
             return `This group doesn't have active event. You can create new one with /create`;
         case ErrorMessage.PermissionDenied:
             return `You are not permitted to execute this operation`;
+        case ErrorMessage.EventIsNotLaunched:
+            return `Event isn't launched, use /cancel to remove it`;
     }
 }
 
@@ -38,6 +40,8 @@ function infoToMessage(info: InfoMessage): string {
     switch (info) {
         case InfoMessage.Help:
             return helpMessage();
+        case InfoMessage.EventFinished:
+            return `Event has finished, I hope it was fun! Now you can /create new event in this chat!`;
     }
 }
 

@@ -11,7 +11,7 @@ import { CommandsFactoryImpl } from '../../src/commands/impl/commandsFactoryImpl
 import { Context } from '../../src/context';
 import { Event } from '../../src/event/event';
 
-describe('HelpCommand', () => {
+describe('CreateCommand', () => {
     const any = sinon.default.match.any;
     const chatId = 42;
     const userId = 13;
@@ -50,6 +50,7 @@ describe('HelpCommand', () => {
             data: ''
         });
 
+        expect(output.sendEvent.called).to.be.true;
         expect(output.sendEvent.lastCall.args[0]).to.be.equal(chatId);
         expect(output.sendEvent.lastCall.args[1]).to.be.equal(event);
     });
@@ -69,6 +70,7 @@ describe('HelpCommand', () => {
             data: ''
         });
 
+        expect(output.sendError.called).to.be.true;
         expect(output.sendError.lastCall.args[0]).to.be.equal(chatId);
         expect(output.sendError.lastCall.args[1]).to.be.equal(ErrorMessage.AlreadyHasEvent);
     });
