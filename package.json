@@ -5,7 +5,7 @@
   "scripts": {
     "build": "tsc",
     "watch": "tsc --watch",
-    "test": "./node_modules/.bin/mocha --recursive build/",
+    "test": "./node_modules/.bin/mocha --recursive build/test/",
     "coverage": "./node_modules/.bin/nyc npm test",
     "bot": "node build/src/main.js"
   },
