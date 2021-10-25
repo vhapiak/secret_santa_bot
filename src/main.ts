@@ -1,4 +1,5 @@
 import TelegramBot from 'node-telegram-bot-api';
+import { ButtonsFactoryImpl } from './buttons/impl/buttonsFactoryImpl';
 import { CommandsFactoryImpl } from './commands/impl/commandsFactoryImpl';
 import { Context } from './context';
 import { EventsManagerImpl } from './event/eventsManagerImpl';
@@ -34,6 +35,7 @@ async function main(argv: string[]) {
     };
 
     const commandsFactory = new CommandsFactoryImpl(context);
+    const buttonsFactory = new ButtonsFactoryImpl(context);
 
     telegram.on('text', async (msg: TelegramBot.Message) => {
         console.log(new Date(), msg);
@@ -59,8 +61,31 @@ async function main(argv: string[]) {
         });
     });
 
-    telegram.on('callback_query', (query: TelegramBot.CallbackQuery) => {
+    telegram.on('callback_query', async (query: TelegramBot.CallbackQuery) => {
         console.log(new Date(), query);
+
+        if (!query.data || !query.message) {
+            console.warn('Empty query data');
+            return;
+        } 
+
+        const button = buttonsFactory.createButton(query.data);
+        if (!button) {
+            console.warn('Unknown button');
+            return;
+        }
+
+        let user = await users.getUser(query.from.id);
+        if (!user) {
+            user = await users.addUser(query.from.id, query.from.first_name);
+        }
+
+        await button.process({
+            id: query.id,
+            from: user,
+            chatId: query.message.chat.id,
+            messageId: query.message.message_id
+        });
     });
 
     telegram.startPolling();
