@@ -188,12 +188,23 @@ export class OutputManagerImpl implements OutputManager {
             builder.newLine(`_Currently there are no participants :\\(_`);
         }
     
+        let hasUnregistredUser = false;
         for (let i = 0; i < participants.length; ++i) {
             const user = await this.users.getUser(participants[i].user);
             if (!user) {
                 throw new Error('Cannot find user information');
             }
-            builder.newLine(`${i + 1}\\. [${user.getName()}](tg://user?id=${user.getId()})\n`);
+            builder.newLine(`${i + 1}\\. [${user.getName()}](tg://user?id=${user.getId()})`);
+            if (!user.getChatId()) {
+                hasUnregistredUser = true;
+                builder.append(`\u{1F6AB}`);
+            }
+        }
+
+        if (hasUnregistredUser) {
+            builder.newLine();
+            builder.newLine(`_Users with \u{1F6AB} should write message to me to allow notifications\\.`);
+            builder.append(`Until then event can't be launched\\._`);
         }
         
         return builder.text();
