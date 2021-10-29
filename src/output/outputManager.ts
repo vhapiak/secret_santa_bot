@@ -7,12 +7,16 @@ export enum ErrorMessage {
     AlreadyHasEvent,
     PermissionDenied,
     EventIsNotLaunched,
+    EventAlreadyLaunched,
+    NotEnoughUsers,
+    NotAuthorizedUser,
 }
 
 export enum InfoMessage {
     Help,
     EventFinished,
     EventCanceled,
+    EventLaunched,
 }
 
 export enum ResponseMessage {

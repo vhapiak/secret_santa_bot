@@ -5,6 +5,7 @@ import { CancelCommand } from './cancelCommand';
 import { CreateCommand } from './createCommand';
 import { FinishCommand } from './finishCommand';
 import { HelpCommand } from './helpCommand';
+import { LaunchCommand } from './launchCommand';
 import { StatusCommand } from './statusCommand';
 
 export class CommandsFactoryImpl implements CommandsFactory {
@@ -25,6 +26,8 @@ export class CommandsFactoryImpl implements CommandsFactory {
                 return new CancelCommand(this.context);
             case '/status':
                 return new StatusCommand(this.context);
+            case '/launch':
+                return new LaunchCommand(this.context);
         }
         return new HelpCommand(this.context);
     }

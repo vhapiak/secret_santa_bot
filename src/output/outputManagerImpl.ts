@@ -17,6 +17,15 @@ function errorToMessage(error: ErrorMessage): string {
             return `You are not permitted to execute this operation`;
         case ErrorMessage.EventIsNotLaunched:
             return `Event isn't launched, use /cancel to remove it`;
+        case ErrorMessage.EventAlreadyLaunched:
+            return `Event already launched`;
+        case ErrorMessage.NotEnoughUsers:
+            return `Event must have at least 2 participants`;
+        case ErrorMessage.NotAuthorizedUser:
+            return multiline()
+                .append( `I can't write message to some of the participants.`)
+                .append(`Please, ask them to send me private message and try aggain.`)
+                .text();
     }
 }
 
@@ -44,6 +53,8 @@ function infoToMessage(info: InfoMessage): string {
             return `Event has finished, I hope it was fun! Now you can /create new event in this chat!`;
         case InfoMessage.EventCanceled:
             return `Event has canceled! Now you can /create new event in this chat!`;
+        case InfoMessage.EventLaunched:
+            return `Event has launched! Check private messages to see your target!`;
     }
 }
 
