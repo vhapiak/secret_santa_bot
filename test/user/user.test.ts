@@ -11,6 +11,7 @@ describe('User', () => {
     const id = 42;
     const name = 'santa';
     const chatId = 6;
+    const wishlist = 'wishlist';
     const dataWithoutChat = JSON.stringify({
         id: id,
         name: name
@@ -19,6 +20,11 @@ describe('User', () => {
         id: id,
         name: name,
         chatId: chatId
+    });
+    const dataWithWishlist  = JSON.stringify({
+        id: id,
+        name: name,
+        wishlist: wishlist
     });
 
     const fsStub = sinon.stubObject(fs);
@@ -58,6 +64,17 @@ describe('User', () => {
 
         expect(fsStub.writeFileSync.lastCall.args[1]).to.be.equal(dataWithChat);
         expect(user.getChatId()).to.be.equal(chatId);
+    });
+
+    it('should save wishlist info to file', () => {
+        const user = new UserImpl(filepath, {
+            id: id,
+            name: name
+        });
+        user.setWitshlist(wishlist);
+
+        expect(fsStub.writeFileSync.lastCall.args[1]).to.be.equal(dataWithWishlist);
+        expect(user.getWishlist()).to.be.equal(wishlist);
     });
 
     it('should read data without chat info from file', () => {

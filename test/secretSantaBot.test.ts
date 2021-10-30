@@ -177,6 +177,70 @@ describe('SecretSantaBot', () => {
         expect(telegram.sendMessage.lastCall.args[0]).to.be.equal(chatId);
     });
 
+    it('should process chained commands', () => {
+        const bot = new SecretSantaBot(telegram, users, commands, buttons);
+
+        const nextCommand = sinon.stubInterface<Command>();
+        users.getUser.withArgs(userId).returns(user);
+        commands.createCommand.withArgs('/whishlist').returns(command);
+        command.process.returns(nextCommand);
+        
+        bot.processTextMessage({
+            message_id: messageId,
+            chat: {
+                id: chatId,
+                type: 'group',
+                title: title
+            },
+            date: 0,
+            from: {
+                id: userId,
+                first_name: firstName,
+                last_name: lastName,
+                is_bot: false
+            },
+            text: '/whishlist',
+            entities: [
+                {
+                    offset: 0,
+                    length: 10,
+                    type: 'bot_command'
+                }
+            ]
+        });
+
+        commands.createCommand.throws('');
+        nextCommand.process.returns(undefined);
+
+        bot.processTextMessage({
+            message_id: messageId,
+            chat: {
+                id: chatId,
+                type: 'private',
+                title: title
+            },
+            date: 0,
+            from: {
+                id: userId,
+                first_name: firstName,
+                last_name: lastName,
+                is_bot: false
+            },
+            text: 'whishlist'
+        });
+
+        expect(nextCommand.process.called).to.be.true;
+        expect(nextCommand.process.lastCall.args[0]).to.be.deep.equal({
+            from: user,
+            chat: {
+                id: chatId,
+                title: title,
+                private: true
+            },
+            data: 'whishlist'
+        });
+    });
+
     it('should process button', () => {
         const bot = new SecretSantaBot(telegram, users, commands, buttons);
 

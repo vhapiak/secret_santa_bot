@@ -11,6 +11,7 @@ export class WishlistCommand implements Command {
     process(message: Message): Command | undefined {
         if (!message.chat.private) {
             this.context.output.sendError(message.chat.id, ErrorMessage.NotPrivateChat);
+            return undefined;
         }
         this.context.output.sendInfo(message.chat.id, InfoMessage.WaitingForWishlist);
         return new UpdateWhishlistDialog(this.context);

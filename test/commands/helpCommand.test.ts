@@ -12,7 +12,6 @@ import { Context } from '../../src/context';
 import { Command } from '../../src/commands/command';
 
 describe('HelpCommand', () => {
-    const any = sinon.default.match.any;
     const chatId = 42;
     const title = 'Some group';
 
