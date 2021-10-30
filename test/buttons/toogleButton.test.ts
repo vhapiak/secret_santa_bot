@@ -13,7 +13,6 @@ import { ButtonsFactoryImpl } from '../../src/buttons/impl/buttonsFactoryImpl';
 import { Button } from '../../src/buttons/button';
 
 describe('ToogleButton', () => {
-    const any = sinon.default.match.any;
     const requestId = 'request';
     const chatId = 42;
     const messageId = 142;
@@ -35,16 +34,16 @@ describe('ToogleButton', () => {
         sinon.default.reset();
     });
 
-    it('should add participant to event', async () => {
+    it('should add participant to event', () => {
         const factory = new ButtonsFactoryImpl(context);
         const button = factory.createButton('toogle') as Button;
         
-        events.getEvent.withArgs(chatId).returns(Promise.resolve(event));
+        events.getEvent.withArgs(chatId).returns(event);
         event.getState.returns(EventState.Registering);
-        event.toogleParticipant.returns(Promise.resolve(true));
+        event.toogleParticipant.returns(true);
         user.getId.returns(userId);
 
-        await button.process({
+        button.process({
             id: requestId,
             from: user,
             chatId: chatId,
@@ -64,16 +63,16 @@ describe('ToogleButton', () => {
         expect(output.responseOnClick.lastCall.args[1]).to.be.equal(ResponseMessage.EventJoined);
     });
 
-    it('should remove participant from event', async () => {
+    it('should remove participant from event', () => {
         const factory = new ButtonsFactoryImpl(context);
         const button = factory.createButton('toogle') as Button;
         
-        events.getEvent.withArgs(chatId).returns(Promise.resolve(event));
+        events.getEvent.withArgs(chatId).returns(event);
         event.getState.returns(EventState.Registering);
-        event.toogleParticipant.returns(Promise.resolve(false));
+        event.toogleParticipant.returns(false);
         user.getId.returns(userId);
 
-        await button.process({
+        button.process({
             id: requestId,
             from: user,
             chatId: chatId,
@@ -93,13 +92,13 @@ describe('ToogleButton', () => {
         expect(output.responseOnClick.lastCall.args[1]).to.be.equal(ResponseMessage.EventLeft);
     });
 
-    it('should replace message for canceled', async () => {
+    it('should replace message for canceled', () => {
         const factory = new ButtonsFactoryImpl(context);
         const button = factory.createButton('toogle') as Button;
         
-        events.getEvent.withArgs(chatId).returns(Promise.resolve(undefined));
+        events.getEvent.withArgs(chatId).returns(undefined);
 
-        await button.process({
+        button.process({
             id: requestId,
             from: user,
             chatId: chatId,
@@ -115,14 +114,14 @@ describe('ToogleButton', () => {
         expect(output.responseOnClick.lastCall.args[1]).to.be.equal(ResponseMessage.EventCanceled);
     });
 
-    it('should prevent modification of launched event', async () => {
+    it('should prevent modification of launched event', () => {
         const factory = new ButtonsFactoryImpl(context);
         const button = factory.createButton('toogle') as Button;
         
-        events.getEvent.withArgs(chatId).returns(Promise.resolve(event));
+        events.getEvent.withArgs(chatId).returns(event);
         event.getState.returns(EventState.Launched);
 
-        await button.process({
+        button.process({
             id: requestId,
             from: user,
             chatId: chatId,

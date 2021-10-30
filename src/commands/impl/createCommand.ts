@@ -7,18 +7,18 @@ export class CreateCommand implements Command {
 
     }
 
-    async process(message: Message): Promise<Command | undefined> {
-        if (await this.context.events.getEvent(message.chat.id)) {
-            await this.context.output.sendError(message.chat.id, ErrorMessage.AlreadyHasEvent);
+    process(message: Message): Command | undefined {
+        if (this.context.events.getEvent(message.chat.id)) {
+            this.context.output.sendError(message.chat.id, ErrorMessage.AlreadyHasEvent);
             return undefined;
         }
 
-        const event = await this.context.events.addEvent(
+        const event = this.context.events.addEvent(
             message.chat.id,
             message.chat.title,
             message.from.getId());
 
-        await this.context.output.sendEvent(message.chat.id, event);
+        this.context.output.sendEvent(message.chat.id, event);
 
         return undefined;
     }

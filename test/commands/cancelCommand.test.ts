@@ -43,13 +43,13 @@ describe('CancelCommand', () => {
         sinon.default.reset();
     });
 
-    it('should remove event', async () => {
+    it('should remove event', () => {
         const factory = new CommandsFactoryImpl(context);
         const command = factory.createCommand('/cancel');
         
-        users.getUser.withArgs(userId).returns(Promise.resolve(user));
-        users.getUser.withArgs(otherId).returns(Promise.resolve(other));
-        events.getEvent.withArgs(chatId).returns(Promise.resolve(event));
+        users.getUser.withArgs(userId).returns(user);
+        users.getUser.withArgs(otherId).returns(other);
+        events.getEvent.withArgs(chatId).returns(event);
         event.getId.returns(chatId);
         event.getOwner.returns(userId);
         event.getParticipants.returns(participants);
@@ -58,7 +58,7 @@ describe('CancelCommand', () => {
         user.getChatId.returns(userId);
         other.getChatId.returns(undefined);
 
-        await command.process({
+        command.process({
             from: user,
             chat: {
                 id: chatId,
@@ -79,13 +79,13 @@ describe('CancelCommand', () => {
         expect(output.sendInfo.lastCall.args[1]).to.be.equal(InfoMessage.EventCanceled);
     });
 
-    it('should check that event is present in chat', async () => {
+    it('should check that event is present in chat', () => {
         const factory = new CommandsFactoryImpl(context);
         const command = factory.createCommand('/cancel');
         
-        events.getEvent.withArgs(chatId).returns(Promise.resolve(undefined));
+        events.getEvent.withArgs(chatId).returns(undefined);
 
-        await command.process({
+        command.process({
             from: user,
             chat: {
                 id: chatId,
@@ -99,15 +99,15 @@ describe('CancelCommand', () => {
         expect(output.sendError.lastCall.args[1]).to.be.equal(ErrorMessage.NoEvent);
     });
 
-    it('should check that command called by event owner', async () => {
+    it('should check that command called by event owner', () => {
         const factory = new CommandsFactoryImpl(context);
         const command = factory.createCommand('/cancel');
         
-        events.getEvent.withArgs(chatId).returns(Promise.resolve(event));
+        events.getEvent.withArgs(chatId).returns(event);
         event.getOwner.returns(userId + 1);
         user.getId.returns(userId);
 
-        await command.process({
+        command.process({
             from: user,
             chat: {
                 id: chatId,

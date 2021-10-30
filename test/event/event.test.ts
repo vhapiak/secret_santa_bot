@@ -1,13 +1,10 @@
-import { EventImpl } from '../../src/event/eventImpl';
+import { EventImpl } from '../../src/event/impl/eventImpl';
 
 import { describe, it } from 'mocha';
-import { expect, use } from 'chai';
-import chaiAsPromised from 'chai-as-promised';
+import { expect } from 'chai';
 import * as sinon from 'ts-sinon';
 import fs from 'fs';
 import { EventState } from '../../src/event/event';
-
-use(chaiAsPromised);
 
 describe('Event', () => {
     const any = sinon.default.match.any;
@@ -41,13 +38,12 @@ describe('Event', () => {
         }]
     });
 
-    const fsPromisesStub = sinon.stubObject(fs.promises);
     const fsStub = sinon.stubObject(fs);
 
     before(() => {
         sinon.default.replace(fs, 'existsSync', fsStub.existsSync);
-        sinon.default.replace(fs.promises, 'readFile', fsPromisesStub.readFile);
-        sinon.default.replace(fs.promises, 'writeFile', fsPromisesStub.writeFile);
+        sinon.default.replace(fs, 'readFileSync', fsStub.readFileSync);
+        sinon.default.replace(fs, 'writeFileSync', fsStub.writeFileSync);
     });
 
     after(() => {
@@ -56,14 +52,14 @@ describe('Event', () => {
 
     afterEach(() => {
         fsStub.existsSync.reset();
-        fsPromisesStub.readFile.reset();
-        fsStub.writeFile.reset();
+        fsStub.writeFileSync.reset();
+        fsStub.readFileSync.reset();
     });
 
-    it('should save data to file during creation', async () => {
-        const event = await EventImpl.createEvent(filepath, id, name, owner);
+    it('should save data to file during creation', () => {
+        const event = EventImpl.createEvent(filepath, id, name, owner);
 
-        expect(fsPromisesStub.writeFile.lastCall.args[1]).to.be.equal(dataWithoutParticipants);
+        expect(fsStub.writeFileSync.lastCall.args[1]).to.be.equal(dataWithoutParticipants);
 
         expect(event.getId()).to.be.equal(id);
         expect(event.getName()).to.be.equal(name);
@@ -72,7 +68,7 @@ describe('Event', () => {
         expect(event.getParticipants().length).to.be.equal(0);
     });
 
-    it('should save participants changes to file', async () => {
+    it('should save participants changes to file', () => {
         const user = new EventImpl(filepath, {
             id: id,
             owner: owner,
@@ -81,23 +77,23 @@ describe('Event', () => {
             participants: []
         });
 
-        await user.toogleParticipant(owner);
+        user.toogleParticipant(owner);
         expect(user.getParticipants().length).to.be.equal(1);
         expect(user.getParticipants()[0].user).to.be.equal(owner);
         expect(user.getParticipants()[0].target).to.be.undefined;
 
         const another = 12;
-        await user.toogleParticipant(another);
+        user.toogleParticipant(another);
         expect(user.getParticipants().length).to.be.equal(2);
         expect(user.getParticipants()[0].user).to.be.equal(owner);
         expect(user.getParticipants()[1].user).to.be.equal(another);
 
-        await user.toogleParticipant(owner);
+        user.toogleParticipant(owner);
         expect(user.getParticipants().length).to.be.equal(1);
         expect(user.getParticipants()[0].user).to.be.equal(another);
     });
 
-    it('should save state changes to file', async () => {
+    it('should save state changes to file', () => {
         const user = new EventImpl(filepath, {
             id: id,
             owner: owner,
@@ -105,13 +101,13 @@ describe('Event', () => {
             state: EventState.Registering,
             participants: []
         });
-        await user.setState(EventState.Launched);
+        user.setState(EventState.Launched);
 
-        expect(fsPromisesStub.writeFile.lastCall.args[1]).to.be.equal(launchedData);
+        expect(fsStub.writeFileSync.lastCall.args[1]).to.be.equal(launchedData);
         expect(user.getState()).to.be.equal(EventState.Launched);
     });
 
-    it('should save target changes to file', async () => {
+    it('should save target changes to file', () => {
         const user = new EventImpl(filepath, {
             id: id,
             owner: owner,
@@ -121,13 +117,13 @@ describe('Event', () => {
                 user: owner
             }]
         });
-        await user.setTarget(owner, target);
+        user.setTarget(owner, target);
 
-        expect(fsPromisesStub.writeFile.lastCall.args[1]).to.be.equal(dataWithParticipants);
+        expect(fsStub.writeFileSync.lastCall.args[1]).to.be.equal(dataWithParticipants);
         expect(user.getParticipants()[0].target).to.be.equal(target);
     });
 
-    it('should throw in case of wrong target assignment', async () => {
+    it('should throw in case of wrong target assignment', () => {
         const user = new EventImpl(filepath, {
             id: id,
             owner: owner,
@@ -135,14 +131,14 @@ describe('Event', () => {
             state: EventState.Launched,
             participants: []
         });
-        expect(user.setTarget(owner, target)).to.be.eventually.rejected;
+        expect(() => user.setTarget(owner, target)).to.throw;
     });
 
-    it('should read data from file', async () => {
+    it('should read data from file', () => {
         fsStub.existsSync.withArgs(filepath).returns(true);
-        fsPromisesStub.readFile.withArgs(filepath, any).returns(Promise.resolve(dataWithParticipants));
+        fsStub.readFileSync.withArgs(filepath, any).returns(dataWithParticipants);
 
-        const event = await EventImpl.readFromFile(filepath);
+        const event = EventImpl.readFromFile(filepath);
 
         expect(event?.getId()).to.be.equal(id);
         expect(event?.getName()).to.be.equal(name);
@@ -152,9 +148,9 @@ describe('Event', () => {
         expect(event?.getParticipants()[0].user).to.be.equal(owner);
     });
 
-    it('should not return user if file not exists', async () => {
+    it('should not return user if file not exists', () => {
         fsStub.existsSync.withArgs(filepath).returns(false);
-        const event = await EventImpl.readFromFile(filepath);
+        const event = EventImpl.readFromFile(filepath);
         expect(event).to.be.undefined;
     });
 });

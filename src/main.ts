@@ -2,12 +2,12 @@ import TelegramBot from 'node-telegram-bot-api';
 import { ButtonsFactoryImpl } from './buttons/impl/buttonsFactoryImpl';
 import { CommandsFactoryImpl } from './commands/impl/commandsFactoryImpl';
 import { Context } from './context';
-import { EventsManagerImpl } from './event/eventsManagerImpl';
-import { OutputManagerImpl } from './output/outputManagerImpl';
+import { EventsManagerImpl } from './event/impl/eventsManagerImpl';
+import { OutputManagerImpl } from './output/impl/outputManagerImpl';
 import { SecretSantaBot } from './secretSantaBot';
-import { UsersManagerImpl } from './user/usersManagerImpl';
+import { UsersManagerImpl } from './user/impl/usersManagerImpl';
 
-async function main(argv: string[]) {
+function main(argv: string[]) {
     if (argv.length < 4) {
         console.log('Usage: main.js <telegram-token> <db-directory>');
         return;
@@ -33,12 +33,12 @@ async function main(argv: string[]) {
         buttonsFactory
     );
 
-    telegram.on('text', async (msg: TelegramBot.Message) => {
+    telegram.on('text', (msg: TelegramBot.Message) => {
         console.log(new Date(), msg);
         secretSantaBot.processTextMessage(msg);
     });
 
-    telegram.on('callback_query', async (query: TelegramBot.CallbackQuery) => {
+    telegram.on('callback_query', (query: TelegramBot.CallbackQuery) => {
         console.log(new Date(), query);
         secretSantaBot.processCallbackQuery(query);
     });

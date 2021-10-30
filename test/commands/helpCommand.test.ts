@@ -31,8 +31,8 @@ describe('HelpCommand', () => {
         sinon.default.reset();
     });
 
-    async function performTest(command: Command): Promise<void> {
-        await command.process({
+    function performTest(command: Command): void {
+        command.process({
             from: user,
             chat: {
                 id: chatId,
@@ -46,21 +46,21 @@ describe('HelpCommand', () => {
         expect(output.sendInfo.lastCall.args[1]).to.be.equal(InfoMessage.Help);
     }
 
-    it('should send help message on /start', async () => {
+    it('should send help message on /start', () => {
         const factory = new CommandsFactoryImpl(context);
         const command = factory.createCommand('/start');
-        await performTest(command);
+        performTest(command);
     });
 
-    it('should send help message on /help', async () => {
+    it('should send help message on /help', () => {
         const factory = new CommandsFactoryImpl(context);
         const command = factory.createCommand('/help');
-        await performTest(command);
+        performTest(command);
     });
     
-    it('should send help message on undefined command', async () => {
+    it('should send help message on undefined command', () => {
         const factory = new CommandsFactoryImpl(context);
         const command = factory.createCommand(undefined);
-        await performTest(command);
+        performTest(command);
     });
 });

@@ -1,9 +1,9 @@
 import TelegramBot from 'node-telegram-bot-api';
-import { Event, EventState } from '../event/event';
-import { multiline } from '../textBuilder';
-import { ChatId, User } from '../user/user';
-import { UsersManager } from '../user/usersManager';
-import { ErrorMessage, InfoMessage, OutputManager, ResponseMessage } from './outputManager';
+import { Event, EventState } from '../../event/event';
+import { multiline } from '../../textBuilder';
+import { ChatId, User } from '../../user/user';
+import { UsersManager } from '../../user/usersManager';
+import { ErrorMessage, InfoMessage, OutputManager, ResponseMessage } from '../outputManager';
 
 function errorToMessage(error: ErrorMessage): string {
     switch (error) {
@@ -83,20 +83,20 @@ export class OutputManagerImpl implements OutputManager {
 
     }
 
-    async sendError(chat: ChatId, error: ErrorMessage): Promise<void> {
+    sendError(chat: ChatId, error: ErrorMessage): void {
         this.bot.sendMessage(
             chat, 
             errorToMessage(error));
     }
 
-    async sendInfo(chat: ChatId, info: InfoMessage): Promise<void> {
+    sendInfo(chat: ChatId, info: InfoMessage): void {
         this.bot.sendMessage(
             chat, 
             infoToMessage(info));
     }
 
-    async sendEvent(chat: ChatId, event: Event): Promise<void> {
-        const message = await this.renderEventMessage(event);
+    sendEvent(chat: ChatId, event: Event): void {
+        const message = this.renderEventMessage(event);
         this.bot.sendMessage(
             chat,
             message.text,
@@ -108,7 +108,7 @@ export class OutputManagerImpl implements OutputManager {
             });
     }
 
-    async sendTarget(chat: ChatId, event: Event, target: User): Promise<void> {
+    sendTarget(chat: ChatId, event: Event, target: User): void {
         const message = multiline()
             .append(`Secret santa event in _${event.getName()}_ has been laucnhed.`)
             .append(`You should prepare present for [${target.getName()}](tg://user?id=${target.getId()})`)
@@ -122,7 +122,7 @@ export class OutputManagerImpl implements OutputManager {
             });
     }
 
-    async sendEventCancelation(chat: ChatId, event: Event): Promise<void> {
+    sendEventCancelation(chat: ChatId, event: Event): void {
         const message = multiline().
             append(`Secret Santa event has canceled in group _${event.getName()}_.`)
             .newLine(`Ignore all previous messages regarding this group.`)
@@ -136,8 +136,8 @@ export class OutputManagerImpl implements OutputManager {
             });
     }
 
-    async updateEvent(chat: ChatId, messageId: number, event: Event): Promise<void> {
-        const message = await this.renderEventMessage(event);
+    updateEvent(chat: ChatId, messageId: number, event: Event): void {
+        const message = this.renderEventMessage(event);
         this.bot.editMessageText(
             message.text, 
             {
@@ -150,7 +150,7 @@ export class OutputManagerImpl implements OutputManager {
             });
     }
 
-    async cancelEvent(chat: ChatId, messageId: number): Promise<void> {
+    cancelEvent(chat: ChatId, messageId: number): void {
         const message = `_Event canceled_`;
         this.bot.editMessageText(
             message, 
@@ -164,7 +164,7 @@ export class OutputManagerImpl implements OutputManager {
             });
     }
 
-    async responseOnClick(request: string, response: ResponseMessage): Promise<void> {
+    responseOnClick(request: string, response: ResponseMessage): void {
         this.bot.answerCallbackQuery(
             request, 
             {
@@ -172,16 +172,16 @@ export class OutputManagerImpl implements OutputManager {
             });
     }
 
-    private async renderEventMessage(event: Event): Promise<InteractiveMessage> {
+    private renderEventMessage(event: Event): InteractiveMessage {
         return {
-            text: await this.renderEventText(event),
+            text: this.renderEventText(event),
             buttons: this.renderEventButtons(event)
         };
     }
 
-    private async renderEventText(event: Event): Promise<string> {
+    private renderEventText(event: Event): string {
         const status = event.getState() === EventState.Launched ? 'Laucnhed' : 'Registering';
-        const owner = await this.users.getUser(event.getOwner());
+        const owner = this.users.getUser(event.getOwner());
         if (!owner) {
             throw new Error('Cannot find owner information');
         }
@@ -201,7 +201,7 @@ export class OutputManagerImpl implements OutputManager {
     
         let hasUnregistredUser = false;
         for (let i = 0; i < participants.length; ++i) {
-            const user = await this.users.getUser(participants[i].user);
+            const user = this.users.getUser(participants[i].user);
             if (!user) {
                 throw new Error('Cannot find user information');
             }

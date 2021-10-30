@@ -6,12 +6,11 @@ import TelegramBot from 'node-telegram-bot-api';
 import { UsersManager } from '../../src/user/usersManager';
 import { User } from '../../src/user/user';
 import { Event, EventState } from '../../src/event/event';
-import { OutputManagerImpl } from '../../src/output/outputManagerImpl';
+import { OutputManagerImpl } from '../../src/output/impl/outputManagerImpl';
 import { ErrorMessage, InfoMessage, ResponseMessage } from '../../src/output/outputManager';
 
 // @todo check message content
 describe('OutputManager', () => {
-    const any = sinon.default.match.any;
     const chatId = 42;
     const name = 'Some group';
     const ownerId = 13;
@@ -29,7 +28,7 @@ describe('OutputManager', () => {
         sinon.default.reset();
     });
 
-    it('should send error message', async () => {
+    it('should send error message', () => {
         const manager = new OutputManagerImpl(bot, users);
 
         manager.sendError(chatId, ErrorMessage.AlreadyHasEvent);
@@ -41,14 +40,14 @@ describe('OutputManager', () => {
         expect(bot.sendMessage.getCalls().length).to.be.equal(4);
     });
 
-    it('should send info message', async () => {
+    it('should send info message', () => {
         const manager = new OutputManagerImpl(bot, users);
 
-        await manager.sendInfo(chatId, InfoMessage.Help);
+        manager.sendInfo(chatId, InfoMessage.Help);
         expect(bot.sendMessage.calledOnce).to.be.true;
     });
 
-    it('should send event message', async () => {
+    it('should send event message', () => {
         const manager = new OutputManagerImpl(bot, users);
 
         event.getName.returns(name);
@@ -67,25 +66,25 @@ describe('OutputManager', () => {
         other.getId.returns(otherId);
         owner.getName.returns(otherName);
 
-        users.getUser.withArgs(ownerId).returns(Promise.resolve(owner));
-        users.getUser.withArgs(otherId).returns(Promise.resolve(other));
+        users.getUser.withArgs(ownerId).returns(owner);
+        users.getUser.withArgs(otherId).returns(other);
 
-        await manager.sendEvent(chatId, event);
+        manager.sendEvent(chatId, event);
         expect(bot.sendMessage.calledOnce).to.be.true;
     });
 
-    it('should send target message', async () => {
+    it('should send target message', () => {
         const manager = new OutputManagerImpl(bot, users);
 
         event.getName.returns(name);
         owner.getId.returns(ownerId);
         owner.getName.returns(ownerName);
 
-        await manager.sendTarget(chatId, event, owner);
+        manager.sendTarget(chatId, event, owner);
         expect(bot.sendMessage.calledOnce).to.be.true;
     });
 
-    it('should update event message', async () => {
+    it('should update event message', () => {
         const manager = new OutputManagerImpl(bot, users);
 
         event.getName.returns(name);
@@ -104,18 +103,18 @@ describe('OutputManager', () => {
         other.getId.returns(otherId);
         owner.getName.returns(otherName);
 
-        users.getUser.withArgs(ownerId).returns(Promise.resolve(owner));
-        users.getUser.withArgs(otherId).returns(Promise.resolve(other));
+        users.getUser.withArgs(ownerId).returns(owner);
+        users.getUser.withArgs(otherId).returns(other);
 
         const messageId = 0;
-        await manager.updateEvent(chatId, messageId, event);
+        manager.updateEvent(chatId, messageId, event);
         expect(bot.editMessageText.calledOnce).to.be.true;
     });
 
-    it('should response to query', async () => {
+    it('should response to query', () => {
         const manager = new OutputManagerImpl(bot, users);
 
-        await manager.responseOnClick('query', ResponseMessage.AlreadyLaunched);
+        manager.responseOnClick('query', ResponseMessage.AlreadyLaunched);
         expect(bot.answerCallbackQuery.calledOnce).to.be.true;
     });
 });

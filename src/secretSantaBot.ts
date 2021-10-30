@@ -30,17 +30,17 @@ export class SecretSantaBot {
 
     }
 
-    async processTextMessage(msg: TelegramBot.Message) {
+    processTextMessage(msg: TelegramBot.Message): void {
         try {
-            await this.processTextMessageImpl(msg);
+            this.processTextMessageImpl(msg);
         } catch (error) {
             this.bot.sendMessage(msg.chat.id, 'Internal error!');
         }
     }
 
-    async processCallbackQuery(query: TelegramBot.CallbackQuery) {
+    processCallbackQuery(query: TelegramBot.CallbackQuery): void {
         try {
-            await this.processCallbackQueryImpl(query);
+            this.processCallbackQueryImpl(query);
         } catch (error) {
             this.bot.answerCallbackQuery(
                 query.id,
@@ -51,7 +51,7 @@ export class SecretSantaBot {
         }
     }
 
-    private async processTextMessageImpl(msg: TelegramBot.Message): Promise<void> {
+    private processTextMessageImpl(msg: TelegramBot.Message): void {
         if (!msg.from) {
             return;
         }
@@ -59,13 +59,13 @@ export class SecretSantaBot {
         const commandName = commandDetector(msg);
         const command = this.commandsFactory.createCommand(commandName);
 
-        const user = await this.getUser(msg.from);
+        const user = this.getUser(msg.from);
 
         if (msg.chat.type == 'private') {
-            await user.bindChat(msg.chat.id);
+            user.bindChat(msg.chat.id);
         }
 
-        await command.process({
+        command.process({
             from: user,
             chat: {
                 id: msg.chat.id,
@@ -75,7 +75,7 @@ export class SecretSantaBot {
         });
     }
 
-    private async processCallbackQueryImpl(query: TelegramBot.CallbackQuery): Promise<void> {
+    private processCallbackQueryImpl(query: TelegramBot.CallbackQuery): void {
         if (!query.data || !query.message) {
             console.warn('Empty query data');
             return;
@@ -87,9 +87,9 @@ export class SecretSantaBot {
             return;
         }
         
-        const user = await this.getUser(query.from);
+        const user = this.getUser(query.from);
 
-        await button.process({
+        button.process({
             id: query.id,
             from: user,
             chatId: query.message.chat.id,
@@ -97,10 +97,10 @@ export class SecretSantaBot {
         });
     }
 
-    private async getUser(from: TelegramBot.User): Promise<User> {
-        let user = await this.users.getUser(from.id);
+    private getUser(from: TelegramBot.User): User {
+        let user = this.users.getUser(from.id);
         if (!user) {
-            user = await this.users.addUser(from.id, generateName(from));
+            user = this.users.addUser(from.id, generateName(from));
         }
         return user;
     }

@@ -13,5 +13,5 @@ export interface User {
      * 
      * @param chatId Telegram chat id for private messaging with user
      */
-    bindChat(chatId: ChatId): Promise<void>;
+    bindChat(chatId: ChatId): void;
 }

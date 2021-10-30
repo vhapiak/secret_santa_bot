@@ -8,5 +8,5 @@ export type Request = {
 }
 
 export interface Button {
-    process(request: Request): Promise<void>;
+    process(request: Request): void;
 }

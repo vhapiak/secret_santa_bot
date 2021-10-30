@@ -12,7 +12,6 @@ import { Context } from '../../src/context';
 import { Event, EventState } from '../../src/event/event';
 
 describe('FinishCommand', () => {
-    const any = sinon.default.match.any;
     const chatId = 42;
     const userId = 13;
     const title = 'Some group';
@@ -33,17 +32,17 @@ describe('FinishCommand', () => {
         sinon.default.reset();
     });
 
-    it('should remove event', async () => {
+    it('should remove event', () => {
         const factory = new CommandsFactoryImpl(context);
         const command = factory.createCommand('/finish');
         
-        events.getEvent.withArgs(chatId).returns(Promise.resolve(event));
+        events.getEvent.withArgs(chatId).returns(event);
         event.getId.returns(chatId);
         event.getState.returns(EventState.Launched);
         event.getOwner.returns(userId);
         user.getId.returns(userId);
 
-        await command.process({
+        command.process({
             from: user,
             chat: {
                 id: chatId,
@@ -60,13 +59,13 @@ describe('FinishCommand', () => {
         expect(output.sendInfo.lastCall.args[1]).to.be.equal(InfoMessage.EventFinished);
     });
 
-    it('should check that event is present in chat', async () => {
+    it('should check that event is present in chat', () => {
         const factory = new CommandsFactoryImpl(context);
         const command = factory.createCommand('/finish');
         
-        events.getEvent.withArgs(chatId).returns(Promise.resolve(undefined));
+        events.getEvent.withArgs(chatId).returns(undefined);
 
-        await command.process({
+        command.process({
             from: user,
             chat: {
                 id: chatId,
@@ -80,16 +79,16 @@ describe('FinishCommand', () => {
         expect(output.sendError.lastCall.args[1]).to.be.equal(ErrorMessage.NoEvent);
     });
 
-    it('should check that event is laucnhed', async () => {
+    it('should check that event is laucnhed', () => {
         const factory = new CommandsFactoryImpl(context);
         const command = factory.createCommand('/finish');
         
-        events.getEvent.withArgs(chatId).returns(Promise.resolve(event));
+        events.getEvent.withArgs(chatId).returns(event);
         event.getState.returns(EventState.Registering);
         event.getOwner.returns(userId);
         user.getId.returns(userId);
 
-        await command.process({
+        command.process({
             from: user,
             chat: {
                 id: chatId,
@@ -103,16 +102,16 @@ describe('FinishCommand', () => {
         expect(output.sendError.lastCall.args[1]).to.be.equal(ErrorMessage.EventIsNotLaunched);
     });
 
-    it('should check that command called by event owner', async () => {
+    it('should check that command called by event owner', () => {
         const factory = new CommandsFactoryImpl(context);
         const command = factory.createCommand('/finish');
         
-        events.getEvent.withArgs(chatId).returns(Promise.resolve(event));
+        events.getEvent.withArgs(chatId).returns(event);
         event.getState.returns(EventState.Launched);
         event.getOwner.returns(userId + 1);
         user.getId.returns(userId);
 
-        await command.process({
+        command.process({
             from: user,
             chat: {
                 id: chatId,

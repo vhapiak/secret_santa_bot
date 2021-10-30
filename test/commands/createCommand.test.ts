@@ -12,7 +12,6 @@ import { Context } from '../../src/context';
 import { Event } from '../../src/event/event';
 
 describe('CreateCommand', () => {
-    const any = sinon.default.match.any;
     const chatId = 42;
     const userId = 13;
     const title = 'Some group';
@@ -33,15 +32,15 @@ describe('CreateCommand', () => {
         sinon.default.reset();
     });
 
-    it('should create new event and send it', async () => {
+    it('should create new event and send it', () => {
         const factory = new CommandsFactoryImpl(context);
         const command = factory.createCommand('/create');
         
-        events.getEvent.withArgs(chatId).returns(Promise.resolve(undefined));
-        events.addEvent.withArgs(chatId, title, userId).returns(Promise.resolve(event));
+        events.getEvent.withArgs(chatId).returns(undefined);
+        events.addEvent.withArgs(chatId, title, userId).returns(event);
         user.getId.returns(userId);
 
-        await command.process({
+        command.process({
             from: user,
             chat: {
                 id: chatId,
@@ -55,13 +54,13 @@ describe('CreateCommand', () => {
         expect(output.sendEvent.lastCall.args[1]).to.be.equal(event);
     });
 
-    it('should check that event already present in chat', async () => {
+    it('should check that event already present in chat', () => {
         const factory = new CommandsFactoryImpl(context);
         const command = factory.createCommand('/create');
         
-        events.getEvent.withArgs(chatId).returns(Promise.resolve(event));
+        events.getEvent.withArgs(chatId).returns(event);
 
-        await command.process({
+        command.process({
             from: user,
             chat: {
                 id: chatId,

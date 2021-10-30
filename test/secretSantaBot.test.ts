@@ -33,13 +33,13 @@ describe('SecretSantaBot', () => {
         sinon.default.reset();
     });
 
-    it('should process command', async () => {
+    it('should process command', () => {
         const bot = new SecretSantaBot(telegram, users, commands, buttons);
 
-        users.getUser.withArgs(userId).returns(Promise.resolve(user));
+        users.getUser.withArgs(userId).returns(user);
         commands.createCommand.withArgs('/launch').returns(command);
         
-        await bot.processTextMessage({
+        bot.processTextMessage({
             message_id: messageId,
             chat: {
                 id: chatId,
@@ -74,13 +74,13 @@ describe('SecretSantaBot', () => {
         });
     });
 
-    it('should process default command', async () => {
+    it('should process default command', () => {
         const bot = new SecretSantaBot(telegram, users, commands, buttons);
 
-        users.getUser.withArgs(userId).returns(Promise.resolve(user));
+        users.getUser.withArgs(userId).returns(user);
         commands.createCommand.withArgs(undefined).returns(command);
         
-        await bot.processTextMessage({
+        bot.processTextMessage({
             message_id: messageId,
             chat: {
                 id: chatId,
@@ -107,14 +107,14 @@ describe('SecretSantaBot', () => {
         });
     });
 
-    it('should register user and bind chat', async () => {
+    it('should register user and bind chat', () => {
         const bot = new SecretSantaBot(telegram, users, commands, buttons);
 
-        users.getUser.withArgs(userId).returns(Promise.resolve(undefined));
-        users.addUser.withArgs(userId, `${firstName} ${lastName}`).returns(Promise.resolve(user));
+        users.getUser.withArgs(userId).returns(undefined);
+        users.addUser.withArgs(userId, `${firstName} ${lastName}`).returns(user);
         commands.createCommand.returns(command);
         
-        await bot.processTextMessage({
+        bot.processTextMessage({
             message_id: messageId,
             chat: {
                 id: chatId,
@@ -134,10 +134,10 @@ describe('SecretSantaBot', () => {
         expect(user.bindChat.lastCall.args[0]).to.be.equal(chatId);
     });
 
-    it('should skip process invalid message', async () => {
+    it('should skip process invalid message', () => {
         const bot = new SecretSantaBot(telegram, users, commands, buttons);
         
-        await bot.processTextMessage({
+        bot.processTextMessage({
             message_id: messageId,
             chat: {
                 id: chatId,
@@ -150,12 +150,12 @@ describe('SecretSantaBot', () => {
         expect(users.getUser.called).to.be.false;
     });
 
-    it('should notify about internal error during message processing', async () => {
+    it('should notify about internal error during message processing', () => {
         const bot = new SecretSantaBot(telegram, users, commands, buttons);
         
-        users.getUser.returns(Promise.reject());
+        users.getUser.throws('some error');
 
-        await bot.processTextMessage({
+        bot.processTextMessage({
             message_id: messageId,
             chat: {
                 id: chatId,
@@ -175,13 +175,13 @@ describe('SecretSantaBot', () => {
         expect(telegram.sendMessage.lastCall.args[0]).to.be.equal(chatId);
     });
 
-    it('should process button', async () => {
+    it('should process button', () => {
         const bot = new SecretSantaBot(telegram, users, commands, buttons);
 
-        users.getUser.withArgs(userId).returns(Promise.resolve(user));
+        users.getUser.withArgs(userId).returns(user);
         buttons.createButton.withArgs('toogle').returns(button);
         
-        await bot.processCallbackQuery({
+        bot.processCallbackQuery({
             id: queryId,
             chat_instance: '',
             from: {
@@ -211,13 +211,13 @@ describe('SecretSantaBot', () => {
         });
     });
 
-    it('should skip process unknown button', async () => {
+    it('should skip process unknown button', () => {
         const bot = new SecretSantaBot(telegram, users, commands, buttons);
 
-        users.getUser.withArgs(userId).returns(Promise.resolve(user));
+        users.getUser.withArgs(userId).returns(user);
         buttons.createButton.returns(undefined);
         
-        await bot.processCallbackQuery({
+        bot.processCallbackQuery({
             id: queryId,
             chat_instance: '',
             from: {
@@ -241,13 +241,13 @@ describe('SecretSantaBot', () => {
         expect(button.process.called).to.be.false;
     });
 
-    it('should skip process invalid query', async () => {
+    it('should skip process invalid query', () => {
         const bot = new SecretSantaBot(telegram, users, commands, buttons);
 
-        users.getUser.withArgs(userId).returns(Promise.resolve(user));
+        users.getUser.withArgs(userId).returns(user);
         buttons.createButton.returns(undefined);
         
-        await bot.processCallbackQuery({
+        bot.processCallbackQuery({
             id: queryId,
             chat_instance: '',
             from: {
@@ -263,13 +263,13 @@ describe('SecretSantaBot', () => {
         expect(button.process.called).to.be.false;
     });
 
-    it('should notify about internal error during query processing', async () => {
+    it('should notify about internal error during query processing', () => {
         const bot = new SecretSantaBot(telegram, users, commands, buttons);
 
-        users.getUser.withArgs(userId).returns(Promise.reject());
+        users.getUser.throws('some error');
         buttons.createButton.returns(button);
         
-        await bot.processCallbackQuery({
+        bot.processCallbackQuery({
             id: queryId,
             chat_instance: '',
             from: {

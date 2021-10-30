@@ -34,56 +34,56 @@ export class LaunchCommand implements Command {
 
     }
 
-    async process(message: Message): Promise<Command | undefined> {
-        const event = await this.context.events.getEvent(message.chat.id);
+    process(message: Message): Command | undefined {
+        const event = this.context.events.getEvent(message.chat.id);
         if (!event) {
-            await this.context.output.sendError(message.chat.id, ErrorMessage.NoEvent);
+            this.context.output.sendError(message.chat.id, ErrorMessage.NoEvent);
             return undefined;
         }
 
         if (event.getOwner() !== message.from.getId()) {
-            await this.context.output.sendError(message.chat.id, ErrorMessage.PermissionDenied);
+            this.context.output.sendError(message.chat.id, ErrorMessage.PermissionDenied);
             return undefined;
         }
 
         if (event.getState() === EventState.Launched) {
-            await this.context.output.sendError(message.chat.id, ErrorMessage.EventAlreadyLaunched);
+            this.context.output.sendError(message.chat.id, ErrorMessage.EventAlreadyLaunched);
             return undefined;
         }
 
         if (event.getParticipants().length < 2) {
-            await this.context.output.sendError(message.chat.id, ErrorMessage.NotEnoughUsers);
+            this.context.output.sendError(message.chat.id, ErrorMessage.NotEnoughUsers);
             return undefined;
         }
 
-        const users = await this.getUsers(event.getParticipants());
+        const users = this.getUsers(event.getParticipants());
         if (!this.isAllUsersHaveChat(users)) {
-            await this.context.output.sendEvent(message.chat.id, event);
-            await this.context.output.sendError(message.chat.id, ErrorMessage.NotAuthorizedUser);
+            this.context.output.sendEvent(message.chat.id, event);
+            this.context.output.sendError(message.chat.id, ErrorMessage.NotAuthorizedUser);
             return undefined;
         }
  
         const targets = generateTargets(users);
 
-        await event.setState(EventState.Launched);
+        event.setState(EventState.Launched);
         for (let i = 0; i < targets.length; ++i) {
             const pair = targets[i];
             const chatId = pair.user.getChatId() as ChatId;
 
-            await event.setTarget(pair.user.getId(), pair.target.getId());
-            await this.context.output.sendTarget(chatId, event, pair.target);
+            event.setTarget(pair.user.getId(), pair.target.getId());
+            this.context.output.sendTarget(chatId, event, pair.target);
         }
 
-        await this.context.output.sendInfo(message.chat.id, InfoMessage.EventLaunched);
+        this.context.output.sendInfo(message.chat.id, InfoMessage.EventLaunched);
 
         return undefined;
     }
 
-    private async getUsers(participants: Participant[]): Promise<User[]> {
+    private getUsers(participants: Participant[]): User[] {
         const users: User[] = [];
         for (let i = 0; i < participants.length; ++i) {
             const participant = participants[i];
-            const user = await this.context.users.getUser(participant.user);
+            const user = this.context.users.getUser(participant.user);
             if (!user) {
                 throw new Error(`Cannot find user with id ${participant.user}`);
             }

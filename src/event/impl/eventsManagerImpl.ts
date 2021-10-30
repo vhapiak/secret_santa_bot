@@ -1,7 +1,7 @@
-import { ChatId, UserId } from '../user/user';
+import { ChatId, UserId } from '../../user/user';
 import { EventImpl } from './eventImpl';
-import { EventsManager } from './eventsManager';
-import { Event } from './event';
+import { EventsManager } from '../eventsManager';
+import { Event } from '../event';
 
 import fs from 'fs';
 import path from 'path';
@@ -14,16 +14,16 @@ export class EventsManagerImpl implements EventsManager {
         }
     }
 
-    addEvent(id: ChatId, name: string, owner: UserId): Promise<Event> {
+    addEvent(id: ChatId, name: string, owner: UserId): Event {
         return EventImpl.createEvent(this.makeFilepath(id), id, name, owner);
     }
 
-    getEvent(id: ChatId): Promise<Event | undefined> {
+    getEvent(id: ChatId): Event | undefined {
         return EventImpl.readFromFile(this.makeFilepath(id));
     }
 
-    removeEvent(id: ChatId): Promise<void> {
-        return fs.promises.rm(this.makeFilepath(id));
+    removeEvent(id: ChatId): void {
+        return fs.rmSync(this.makeFilepath(id));
     }
 
     private makeFilepath(id: ChatId): string {

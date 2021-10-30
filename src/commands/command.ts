@@ -12,5 +12,11 @@ export type Message = {
 }
 
 export interface Command {
-    process(message: Message): Promise<Command | undefined>;
+    /**
+     * 
+     * @param message Input message from user
+     * 
+     * @returns Object that will process next input from the user
+     */
+    process(message: Message): Command | undefined;
 }

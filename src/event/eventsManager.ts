@@ -9,7 +9,7 @@ export interface EventsManager {
      * @param name Telegram chat title
      * @param owner User who created this event
      */
-    addEvent(id: ChatId, name: string, owner: UserId): Promise<Event>;
+    addEvent(id: ChatId, name: string, owner: UserId): Event;
 
     /**
      * @brief Find event by chat id
@@ -18,12 +18,12 @@ export interface EventsManager {
      * 
      * @returns undefined if there is no event attached to chat
      */
-    getEvent(id: ChatId): Promise<Event | undefined>;
+    getEvent(id: ChatId): Event | undefined;
 
     /**
      * @brief Remove event from db
      * 
      * @param id Telegram chat id 
      */
-    removeEvent(id: ChatId): Promise<void>;
+    removeEvent(id: ChatId): void;
 }

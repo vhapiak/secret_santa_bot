@@ -1,6 +1,6 @@
-import { User, UserId } from './user';
+import { User, UserId } from '../user';
 import { UserImpl } from './userImpl';
-import { UsersManager } from './usersManager';
+import { UsersManager } from '../usersManager';
 
 import fs from 'fs';
 import path from 'path'
@@ -13,11 +13,11 @@ export class UsersManagerImpl implements UsersManager {
         }
     }
 
-    async addUser(id: UserId, name: string): Promise<User> {
+    addUser(id: UserId, name: string): User {
         return UserImpl.createUser(this.makeFilepath(id), id, name);
     }
 
-    async getUser(id: UserId): Promise<User | undefined> {
+    getUser(id: UserId): User | undefined {
         return UserImpl.readFromFile(this.makeFilepath(id));
     }
 

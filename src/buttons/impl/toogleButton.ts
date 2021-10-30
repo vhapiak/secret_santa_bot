@@ -8,24 +8,24 @@ export class ToogleButton implements Button {
 
     }
 
-    async process(request: Request): Promise<void> {
-        const event = await this.context.events.getEvent(request.chatId);
+    process(request: Request): void {
+        const event = this.context.events.getEvent(request.chatId);
         if (!event) {
-            await this.context.output.responseOnClick(request.id, ResponseMessage.EventCanceled);
-            await this.context.output.cancelEvent(request.chatId, request.messageId);
+            this.context.output.responseOnClick(request.id, ResponseMessage.EventCanceled);
+            this.context.output.cancelEvent(request.chatId, request.messageId);
             return;
         }
 
         if (event.getState() === EventState.Launched) {
-            await this.context.output.responseOnClick(request.id, ResponseMessage.AlreadyLaunched);
-            await this.context.output.updateEvent(request.chatId, request.messageId, event);
+            this.context.output.responseOnClick(request.id, ResponseMessage.AlreadyLaunched);
+            this.context.output.updateEvent(request.chatId, request.messageId, event);
             return;
         }
 
-        const joined = await event.toogleParticipant(request.from.getId());
-        await this.context.output.responseOnClick(
+        const joined = event.toogleParticipant(request.from.getId());
+        this.context.output.responseOnClick(
             request.id, 
             joined ? ResponseMessage.EventJoined : ResponseMessage.EventLeft);
-        await this.context.output.updateEvent(request.chatId, request.messageId, event);
+        this.context.output.updateEvent(request.chatId, request.messageId, event);
     }
 }

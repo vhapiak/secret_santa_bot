@@ -32,8 +32,8 @@ export interface Event {
      * 
      * @return true if user was added to list
      */
-    toogleParticipant(id: UserId): Promise<boolean>;
+    toogleParticipant(id: UserId): boolean;
 
-    setState(state: EventState): Promise<void>;
-    setTarget(user: UserId, target: UserId): Promise<void>;
+    setState(state: EventState): void;
+    setTarget(user: UserId, target: UserId): void;
 }

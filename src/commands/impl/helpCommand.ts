@@ -7,8 +7,8 @@ export class HelpCommand implements Command {
 
     }
 
-    async process(message: Message): Promise<Command | undefined> {
-        await this.context.output.sendInfo(message.chat.id, InfoMessage.Help);
+    process(message: Message): Command | undefined {
+        this.context.output.sendInfo(message.chat.id, InfoMessage.Help);
         return undefined;
     }
 }

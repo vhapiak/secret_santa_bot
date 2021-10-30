@@ -12,7 +12,6 @@ import { Context } from '../../src/context';
 import { Event, EventState } from '../../src/event/event';
 
 describe('LaunchCommand', () => {
-    const any = sinon.default.match.any;
     const chatId = 42;
     const firstUserId = 13;
     const firstChatId = 14;
@@ -51,14 +50,14 @@ describe('LaunchCommand', () => {
         sinon.default.reset();
     });
 
-    it('should send targets to users', async () => {
+    it('should send targets to users', () => {
         const factory = new CommandsFactoryImpl(context);
         const command = factory.createCommand('/launch');
         
-        events.getEvent.withArgs(chatId).returns(Promise.resolve(event));
-        users.getUser.withArgs(firstUserId).returns(Promise.resolve(first));
-        users.getUser.withArgs(secondUserId).returns(Promise.resolve(second));
-        users.getUser.withArgs(thirdUserId).returns(Promise.resolve(third));
+        events.getEvent.withArgs(chatId).returns(event);
+        users.getUser.withArgs(firstUserId).returns(first);
+        users.getUser.withArgs(secondUserId).returns(second);
+        users.getUser.withArgs(thirdUserId).returns(third);
 
         event.getId.returns(chatId);
         event.getState.returns(EventState.Registering);
@@ -72,7 +71,7 @@ describe('LaunchCommand', () => {
         third.getId.returns(thirdUserId);
         third.getChatId.returns(thirdChatId);
 
-        await command.process({
+        command.process({
             from: first,
             chat: {
                 id: chatId,
@@ -103,13 +102,13 @@ describe('LaunchCommand', () => {
         expect(output.sendInfo.lastCall.args[1]).to.be.equal(InfoMessage.EventLaunched);
     });
 
-    it('should check that event is present in chat', async () => {
+    it('should check that event is present in chat', () => {
         const factory = new CommandsFactoryImpl(context);
         const command = factory.createCommand('/launch');
         
-        events.getEvent.withArgs(chatId).returns(Promise.resolve(undefined));
+        events.getEvent.withArgs(chatId).returns(undefined);
 
-        await command.process({
+        command.process({
             from: first,
             chat: {
                 id: chatId,
@@ -123,16 +122,16 @@ describe('LaunchCommand', () => {
         expect(output.sendError.lastCall.args[1]).to.be.equal(ErrorMessage.NoEvent);
     });
 
-    it('should check that event is not laucnhed', async () => {
+    it('should check that event is not laucnhed', () => {
         const factory = new CommandsFactoryImpl(context);
         const command = factory.createCommand('/launch');
         
-        events.getEvent.withArgs(chatId).returns(Promise.resolve(event));
+        events.getEvent.withArgs(chatId).returns(event);
         event.getState.returns(EventState.Launched);
         event.getOwner.returns(firstUserId);
         first.getId.returns(firstUserId);
 
-        await command.process({
+        command.process({
             from: first,
             chat: {
                 id: chatId,
@@ -146,15 +145,15 @@ describe('LaunchCommand', () => {
         expect(output.sendError.lastCall.args[1]).to.be.equal(ErrorMessage.EventAlreadyLaunched);
     });
 
-    it('should check that command called by event owner', async () => {
+    it('should check that command called by event owner', () => {
         const factory = new CommandsFactoryImpl(context);
         const command = factory.createCommand('/launch');
         
-        events.getEvent.withArgs(chatId).returns(Promise.resolve(event));
+        events.getEvent.withArgs(chatId).returns(event);
         event.getOwner.returns(secondUserId);
         first.getId.returns(firstUserId);
 
-        await command.process({
+        command.process({
             from: first,
             chat: {
                 id: chatId,
@@ -168,17 +167,17 @@ describe('LaunchCommand', () => {
         expect(output.sendError.lastCall.args[1]).to.be.equal(ErrorMessage.PermissionDenied);
     });
 
-    it('should check number of participants', async () => {
+    it('should check number of participants', () => {
         const factory = new CommandsFactoryImpl(context);
         const command = factory.createCommand('/launch');
         
-        events.getEvent.withArgs(chatId).returns(Promise.resolve(event));
+        events.getEvent.withArgs(chatId).returns(event);
         event.getState.returns(EventState.Registering);
         event.getOwner.returns(firstUserId);
         event.getParticipants.returns([]);
         first.getId.returns(firstUserId);
 
-        await command.process({
+        command.process({
             from: first,
             chat: {
                 id: chatId,
@@ -192,14 +191,14 @@ describe('LaunchCommand', () => {
         expect(output.sendError.lastCall.args[1]).to.be.equal(ErrorMessage.NotEnoughUsers);
     });
 
-    it('should check that all participants have chat id', async () => {
+    it('should check that all participants have chat id', () => {
         const factory = new CommandsFactoryImpl(context);
         const command = factory.createCommand('/launch');
         
-        events.getEvent.withArgs(chatId).returns(Promise.resolve(event));
-        users.getUser.withArgs(firstUserId).returns(Promise.resolve(first));
-        users.getUser.withArgs(secondUserId).returns(Promise.resolve(second));
-        users.getUser.withArgs(thirdUserId).returns(Promise.resolve(third));
+        events.getEvent.withArgs(chatId).returns(event);
+        users.getUser.withArgs(firstUserId).returns(first);
+        users.getUser.withArgs(secondUserId).returns(second);
+        users.getUser.withArgs(thirdUserId).returns(third);
 
         event.getId.returns(chatId);
         event.getState.returns(EventState.Registering);
@@ -213,7 +212,7 @@ describe('LaunchCommand', () => {
         third.getId.returns(thirdUserId);
         third.getChatId.returns(thirdChatId);
 
-        await command.process({
+        command.process({
             from: first,
             chat: {
                 id: chatId,

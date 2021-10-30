@@ -28,12 +28,12 @@ export enum ResponseMessage {
 }
 
 export interface OutputManager {
-    sendError(chat: ChatId, error: ErrorMessage): Promise<void>;
-    sendInfo(char: ChatId, info: InfoMessage): Promise<void>;
+    sendError(chat: ChatId, error: ErrorMessage): void;
+    sendInfo(char: ChatId, info: InfoMessage): void;
 
-    sendEvent(chat: ChatId, event: Event): Promise<void>;
-    sendTarget(chat: ChatId, event: Event, target: User): Promise<void>;
-    sendEventCancelation(chat: ChatId, event: Event): Promise<void>;
+    sendEvent(chat: ChatId, event: Event): void;
+    sendTarget(chat: ChatId, event: Event, target: User): void;
+    sendEventCancelation(chat: ChatId, event: Event): void;
 
     /**
      * @brief Updates existing telegram message with new event state
@@ -42,7 +42,7 @@ export interface OutputManager {
      * @param messageId Telegram message id with event information
      * @param event New event state
      */
-    updateEvent(chat: ChatId, messageId: number, event: Event): Promise<void>;
+    updateEvent(chat: ChatId, messageId: number, event: Event): void;
 
     /**
      * @brief Updates existing telegram message with canceled event message
@@ -50,7 +50,7 @@ export interface OutputManager {
      * @param chat Telegram chat id with message to update
      * @param messageId Telegram message id with old event information
      */
-    cancelEvent(chat: ChatId, messageId: number): Promise<void>;
+    cancelEvent(chat: ChatId, messageId: number): void;
 
     /**
      * @brief Send reaction in response to button click
@@ -58,5 +58,5 @@ export interface OutputManager {
      * @param request Telegram identifier of button click
      * @param response Result of button click processing
      */
-    responseOnClick(request: string, response: ResponseMessage): Promise<void>;
+    responseOnClick(request: string, response: ResponseMessage): void;
 }

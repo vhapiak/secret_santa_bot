@@ -1,5 +1,5 @@
-import { ChatId, UserId } from '../user/user';
-import { Event, EventState, Participant } from './event';
+import { ChatId, UserId } from '../../user/user';
+import { Event, EventState, Participant } from '../event';
 
 import fs from 'fs';
 
@@ -35,7 +35,7 @@ export class EventImpl implements Event {
         return this.data.participants;
     }
 
-    async toogleParticipant(id: UserId): Promise<boolean> {
+    toogleParticipant(id: UserId): boolean {
         const index = this.data.participants.findIndex(participant => {
             return participant.user == id;
         });
@@ -46,16 +46,16 @@ export class EventImpl implements Event {
         } else {
             this.data.participants.splice(index, 1);
         }
-        await this.save();
+        this.save();
         return index === -1;
     }
 
-    async setState(state: EventState): Promise<void> {
+    setState(state: EventState): void {
         this.data.state = state;
         return this.save();
     }
 
-    async setTarget(user: UserId, target: UserId): Promise<void> {
+    setTarget(user: UserId, target: UserId): void {
         const participant = this.data.participants.find(participant => {
             return participant.user == user;
         });
@@ -66,8 +66,8 @@ export class EventImpl implements Event {
         return this.save();
     }
 
-    async save(): Promise<void> {
-        return fs.promises.writeFile(
+    save(): void {
+        fs.writeFileSync(
             this.filepath, 
             JSON.stringify(this.data),
             {
@@ -77,7 +77,7 @@ export class EventImpl implements Event {
         );
     }
 
-    static async createEvent(filepath: string, id: ChatId, name: string, owner: UserId): Promise<Event> {
+    static createEvent(filepath: string, id: ChatId, name: string, owner: UserId): Event {
         const data: EventData = {
             id: id,
             owner: owner,
@@ -86,16 +86,16 @@ export class EventImpl implements Event {
             participants: []
         }
         const event = new EventImpl(filepath, data);
-        await event.save();
+        event.save();
         return event;
     }
 
-    static async readFromFile(filepath: string): Promise<Event | undefined> {
+    static readFromFile(filepath: string): Event | undefined {
         if (!fs.existsSync(filepath)) {
             return undefined;
         }
 
-        const json = await fs.promises.readFile(filepath, {encoding: 'utf8'});
+        const json = fs.readFileSync(filepath, {encoding: 'utf8'});
         // @todo check read fields
         const data = JSON.parse(json) as EventData;
         return new EventImpl(filepath, data);

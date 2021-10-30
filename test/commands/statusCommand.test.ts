@@ -32,13 +32,13 @@ describe('CreateCommand', () => {
         sinon.default.reset();
     });
 
-    it('should send event message', async () => {
+    it('should send event message', () => {
         const factory = new CommandsFactoryImpl(context);
         const command = factory.createCommand('/status');
         
-        events.getEvent.withArgs(chatId).returns(Promise.resolve(event));
+        events.getEvent.withArgs(chatId).returns(event);
 
-        await command.process({
+        command.process({
             from: user,
             chat: {
                 id: chatId,
@@ -52,13 +52,13 @@ describe('CreateCommand', () => {
         expect(output.sendEvent.lastCall.args[1]).to.be.equal(event);
     });
 
-    it('should check that event exists', async () => {
+    it('should check that event exists', () => {
         const factory = new CommandsFactoryImpl(context);
         const command = factory.createCommand('/status');
         
-        events.getEvent.withArgs(chatId).returns(Promise.resolve(undefined));
+        events.getEvent.withArgs(chatId).returns(undefined);
 
-        await command.process({
+        command.process({
             from: user,
             chat: {
                 id: chatId,

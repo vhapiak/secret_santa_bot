@@ -1,4 +1,4 @@
-import { ChatId, User, UserId } from './user';
+import { ChatId, User, UserId } from '../user';
 
 import fs from 'fs';
 
@@ -23,13 +23,13 @@ export class UserImpl implements User {
         return this.data.chatId;
     }
 
-    async bindChat(chatId: ChatId): Promise<void> {
+    bindChat(chatId: ChatId): void {
         this.data.chatId = chatId;
-        return this.save();
+        this.save();
     }
 
-    async save(): Promise<void> {
-        return fs.promises.writeFile(
+    save(): void {
+        fs.writeFileSync(
             this.filepath, 
             JSON.stringify(this.data),
             {
@@ -39,22 +39,22 @@ export class UserImpl implements User {
         );
     }
 
-    static async createUser(filepath: string, id: UserId, name: string): Promise<User> {
+    static createUser(filepath: string, id: UserId, name: string): User {
         const data: UserData = {
             id: id,
             name: name
         }
         const user = new UserImpl(filepath, data);
-        await user.save();
+        user.save();
         return user;
     }
 
-    static async readFromFile(filepath: string): Promise<User | undefined> {
+    static readFromFile(filepath: string): User | undefined {
         if (!fs.existsSync(filepath)) {
             return undefined;
         }
 
-        const json = await fs.promises.readFile(filepath, {encoding: 'utf8'});
+        const json =fs.readFileSync(filepath, {encoding: 'utf8'});
         // @todo check read fields
         const data = JSON.parse(json) as UserData;
         return new UserImpl(filepath, data);

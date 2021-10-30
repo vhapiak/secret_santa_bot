@@ -7,10 +7,10 @@ export class StatusCommand implements Command {
 
     }
 
-    async process(message: Message): Promise<Command | undefined> {
-        const event = await this.context.events.getEvent(message.chat.id);
+    process(message: Message): Command | undefined {
+        const event = this.context.events.getEvent(message.chat.id);
         if (!event) {
-            await this.context.output.sendError(message.chat.id, ErrorMessage.NoEvent);
+            this.context.output.sendError(message.chat.id, ErrorMessage.NoEvent);
             return undefined;
         }
 
