@@ -96,13 +96,19 @@ export class OutputManagerImpl implements OutputManager {
     sendError(chat: ChatId, error: ErrorMessage): void {
         this.bot.sendMessage(
             chat, 
-            errorToMessage(error));
+            errorToMessage(error),
+            {
+                parse_mode: 'MarkdownV2'
+            });
     }
 
     sendInfo(chat: ChatId, info: InfoMessage): void {
         this.bot.sendMessage(
             chat, 
-            infoToMessage(info));
+            infoToMessage(info),
+            {
+                parse_mode: 'MarkdownV2'
+            });
     }
 
     sendEvent(chat: ChatId, event: Event): void {
