@@ -3,6 +3,7 @@ import { ChatId, User } from '../user/user';
 export type Chat = {
     id: ChatId;
     title: string;
+    private: boolean;
 }
 
 export type Message = {

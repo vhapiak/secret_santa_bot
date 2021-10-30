@@ -6,6 +6,7 @@ export type UserData = {
     id: UserId;
     name: string;
     chatId?: ChatId;
+    wishlist?: string;
 }
 
 export class UserImpl implements User {
@@ -23,8 +24,17 @@ export class UserImpl implements User {
         return this.data.chatId;
     }
 
+    getWishlist(): string | undefined {
+        return this.data.wishlist;
+    }
+
     bindChat(chatId: ChatId): void {
         this.data.chatId = chatId;
+        this.save();
+    }
+
+    setWitshlist(wishlist: string | undefined): void {
+        this.data.wishlist = wishlist;
         this.save();
     }
 

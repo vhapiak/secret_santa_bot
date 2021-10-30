@@ -7,6 +7,7 @@ import { FinishCommand } from './finishCommand';
 import { HelpCommand } from './helpCommand';
 import { LaunchCommand } from './launchCommand';
 import { StatusCommand } from './statusCommand';
+import { WishlistCommand } from './whishlistCommand';
 
 export class CommandsFactoryImpl implements CommandsFactory {
     constructor(private context: Context) {
@@ -28,6 +29,8 @@ export class CommandsFactoryImpl implements CommandsFactory {
                 return new StatusCommand(this.context);
             case '/launch':
                 return new LaunchCommand(this.context);
+            case '/whishlist':
+                return new WishlistCommand(this.context);
         }
         return new HelpCommand(this.context);
     }

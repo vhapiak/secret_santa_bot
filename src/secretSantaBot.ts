@@ -1,7 +1,8 @@
 import TelegramBot from "node-telegram-bot-api";
 import { ButtonsFactory } from "./buttons/buttonsFactory";
+import { Command } from "./commands/command";
 import { CommandsFactory } from "./commands/commandsFactory";
-import { User } from "./user/user";
+import { ChatId, User } from "./user/user";
 import { UsersManager } from "./user/usersManager";
 
 function commandDetector(msg: TelegramBot.Message): string | undefined {
@@ -56,23 +57,28 @@ export class SecretSantaBot {
             return;
         }
 
-        const commandName = commandDetector(msg);
-        const command = this.commandsFactory.createCommand(commandName);
+        const command = this.getActiveCommand(msg);
 
         const user = this.getUser(msg.from);
-
         if (msg.chat.type == 'private') {
             user.bindChat(msg.chat.id);
         }
 
-        command.process({
+        const nextCommand = command.process({
             from: user,
             chat: {
                 id: msg.chat.id,
-                title: msg.chat.title ? msg.chat.title : '<unknow>'
+                title: msg.chat.title ? msg.chat.title : '<unknow>',
+                private: msg.chat.type === 'private'
             },
             data: msg.text ? msg.text : ''
         });
+
+        if (nextCommand) {
+            this.activeDialogs.set(msg.chat.id, nextCommand);
+        } else {
+            this.activeDialogs.delete(msg.chat.id);
+        }
     }
 
     private processCallbackQueryImpl(query: TelegramBot.CallbackQuery): void {
@@ -104,4 +110,15 @@ export class SecretSantaBot {
         }
         return user;
     }
+
+    private getActiveCommand(msg: TelegramBot.Message): Command {
+        let command = this.activeDialogs.get(msg.chat.id);
+        if (command) {
+            return command;
+        }
+        const commandName = commandDetector(msg);
+        return this.commandsFactory.createCommand(commandName);
+    }
+
+    private activeDialogs = new Map<ChatId, Command>();
 }

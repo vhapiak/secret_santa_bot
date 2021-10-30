@@ -26,6 +26,8 @@ function errorToMessage(error: ErrorMessage): string {
                 .append( `I can't write message to some of the participants.`)
                 .append(`Please, ask them to send me private message and try aggain.`)
                 .text();
+        case ErrorMessage.NotPrivateChat:
+            return `This command available only in private chats with me.`;
     }
 }
 
@@ -34,6 +36,8 @@ function helpMessage(): string {
         .append(`Hi, I'm a Secret Santa Bot and I help people with orginizing New Year events.`)
         .newLine()
         .newLine(`If you are event participant: just relax, I will send you all important information later.`)
+        .newLine(`You can add your /wishlist and help your secret santa with choosing a present.`)
+        .newLine(`Use /resetWishlist to reset your wishlist.`)
         .newLine()
         .newLine(`If you want to orginize new event: just add me to group with participants and type /create there.`)
         .append(`When all participants will join event you can type /launch to assign target for each participant.`)
@@ -55,6 +59,12 @@ function infoToMessage(info: InfoMessage): string {
             return `Event has canceled! Now you can /create new event in this chat!`;
         case InfoMessage.EventLaunched:
             return `Event has launched! Check private messages to see your target!`;
+        case InfoMessage.WaitingForWishlist:
+            return `Please send *text* message with your wishlsit!`;
+        case InfoMessage.WishlistUpdated:
+            return `Your wishlist has updated! It will be visible for your secret santa!`;
+        case InfoMessage.WishlistReset:
+            return `Your wishlist has deleted!`;
     }
 }
 
@@ -109,14 +119,22 @@ export class OutputManagerImpl implements OutputManager {
     }
 
     sendTarget(chat: ChatId, event: Event, target: User): void {
-        const message = multiline()
+        const builder = multiline()
             .append(`Secret santa event in _${event.getName()}_ has been laucnhed.`)
             .append(`You should prepare present for [${target.getName()}](tg://user?id=${target.getId()})`)
-            .text();
+            .newLine();
+
+        if (target.getWishlist()) {
+            builder
+                .newLine(`Wishlist of [${target.getName()}](tg://user?id=${target.getId()}):`)
+                .newLine(target.getWishlist())
+        } else {
+            builder.newLine(`Unfortunately this person doesn't have a wishlist!`);
+        }
         
         this.bot.sendMessage(
             chat,
-            message,
+            builder.text(),
             {
                 parse_mode: 'MarkdownV2'
             });

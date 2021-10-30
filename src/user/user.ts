@@ -6,6 +6,7 @@ export interface User {
     getId(): UserId;
     getName(): string;
     getChatId(): ChatId | undefined;
+    getWishlist(): string | undefined;
 
     /**
      * @brief User's telegram chat is unavailable by default,
@@ -14,4 +15,6 @@ export interface User {
      * @param chatId Telegram chat id for private messaging with user
      */
     bindChat(chatId: ChatId): void;
+
+    setWitshlist(wishlist: string | undefined): void;
 }

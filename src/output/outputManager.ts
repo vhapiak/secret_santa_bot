@@ -10,6 +10,7 @@ export enum ErrorMessage {
     EventAlreadyLaunched,
     NotEnoughUsers,
     NotAuthorizedUser,
+    NotPrivateChat,
 }
 
 export enum InfoMessage {
@@ -17,6 +18,9 @@ export enum InfoMessage {
     EventFinished,
     EventCanceled,
     EventLaunched,
+    WaitingForWishlist,
+    WishlistUpdated,
+    WishlistReset,
 }
 
 export enum ResponseMessage {

@@ -46,7 +46,8 @@ describe('FinishCommand', () => {
             from: user,
             chat: {
                 id: chatId,
-                title: title
+                title: title,
+                private: true
             },
             data: ''
         });
@@ -69,7 +70,8 @@ describe('FinishCommand', () => {
             from: user,
             chat: {
                 id: chatId,
-                title: title
+                title: title,
+                private: true
             },
             data: ''
         });
@@ -92,7 +94,8 @@ describe('FinishCommand', () => {
             from: user,
             chat: {
                 id: chatId,
-                title: title
+                title: title,
+                private: true
             },
             data: ''
         });
@@ -115,7 +118,8 @@ describe('FinishCommand', () => {
             from: user,
             chat: {
                 id: chatId,
-                title: title
+                title: title,
+                private: true
             },
             data: ''
         });

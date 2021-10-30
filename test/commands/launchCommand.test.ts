@@ -75,7 +75,8 @@ describe('LaunchCommand', () => {
             from: first,
             chat: {
                 id: chatId,
-                title: title
+                title: title,
+                private: true
             },
             data: ''
         });
@@ -112,7 +113,8 @@ describe('LaunchCommand', () => {
             from: first,
             chat: {
                 id: chatId,
-                title: title
+                title: title,
+                private: true
             },
             data: ''
         });
@@ -135,7 +137,8 @@ describe('LaunchCommand', () => {
             from: first,
             chat: {
                 id: chatId,
-                title: title
+                title: title,
+                private: true
             },
             data: ''
         });
@@ -157,7 +160,8 @@ describe('LaunchCommand', () => {
             from: first,
             chat: {
                 id: chatId,
-                title: title
+                title: title,
+                private: true
             },
             data: ''
         });
@@ -181,7 +185,8 @@ describe('LaunchCommand', () => {
             from: first,
             chat: {
                 id: chatId,
-                title: title
+                title: title,
+                private: true
             },
             data: ''
         });
@@ -216,7 +221,8 @@ describe('LaunchCommand', () => {
             from: first,
             chat: {
                 id: chatId,
-                title: title
+                title: title,
+                private: true
             },
             data: ''
         });

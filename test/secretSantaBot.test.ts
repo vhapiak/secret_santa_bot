@@ -68,7 +68,8 @@ describe('SecretSantaBot', () => {
             from: user,
             chat: {
                 id: chatId,
-                title: title
+                title: title,
+                private: false
             },
             data: '/launch'
         });
@@ -84,7 +85,7 @@ describe('SecretSantaBot', () => {
             message_id: messageId,
             chat: {
                 id: chatId,
-                type: 'group',
+                type: 'private',
                 title: title
             },
             date: 0,
@@ -101,7 +102,8 @@ describe('SecretSantaBot', () => {
             from: user,
             chat: {
                 id: chatId,
-                title: title
+                title: title,
+                private: true
             },
             data: ''
         });

@@ -12,7 +12,6 @@ import { Context } from '../../src/context';
 import { Event, EventState } from '../../src/event/event';
 
 describe('CancelCommand', () => {
-    const any = sinon.default.match.any;
     const chatId = 42;
     const userId = 13;
     const otherId = 14;
@@ -62,7 +61,8 @@ describe('CancelCommand', () => {
             from: user,
             chat: {
                 id: chatId,
-                title: title
+                title: title,
+                private: true
             },
             data: ''
         });
@@ -89,7 +89,8 @@ describe('CancelCommand', () => {
             from: user,
             chat: {
                 id: chatId,
-                title: title
+                title: title,
+                private: true
             },
             data: ''
         });
@@ -111,7 +112,8 @@ describe('CancelCommand', () => {
             from: user,
             chat: {
                 id: chatId,
-                title: title
+                title: title,
+                private: true
             },
             data: ''
         });
