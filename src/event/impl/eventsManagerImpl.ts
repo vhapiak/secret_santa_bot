@@ -5,9 +5,10 @@ import { Event } from '../event';
 
 import fs from 'fs';
 import path from 'path';
+import { UsersManager } from '../../user/usersManager';
 
 export class EventsManagerImpl implements EventsManager {
-    constructor(root: string) {
+    constructor(root: string, private users: UsersManager) {
         this.directory = path.join(root, 'events');
         if (!fs.existsSync(this.directory)) {
             fs.mkdirSync(this.directory, {recursive: true});
@@ -23,7 +24,17 @@ export class EventsManagerImpl implements EventsManager {
     }
 
     removeEvent(id: ChatId): void {
-        return fs.rmSync(this.makeFilepath(id));
+        const filepath = this.makeFilepath(id);
+        const event = EventImpl.readFromFile(filepath);
+        if (event) {
+            event.getParticipants().forEach(participant => {
+                const user = this.users.getUser(participant.user);
+                if (user) {
+                    user.removeActiveEvent(id);
+                }
+            });
+        }
+        return fs.rmSync(filepath);
     }
 
     private makeFilepath(id: ChatId): string {

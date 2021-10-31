@@ -1,10 +1,11 @@
-import { ChatId, User, UserId } from '../user';
+import { ChatId, EventId, User, UserId } from '../user';
 
 import fs from 'fs';
 
 export type UserData = {
     id: UserId;
     name: string;
+    events: EventId[];
     chatId?: ChatId;
     wishlist?: string;
 }
@@ -28,6 +29,10 @@ export class UserImpl implements User {
         return this.data.wishlist;
     }
 
+    getActiveEvents(): EventId[] {
+        return this.data.events;
+    }
+
     bindChat(chatId: ChatId): void {
         this.data.chatId = chatId;
         this.save();
@@ -38,7 +43,23 @@ export class UserImpl implements User {
         this.save();
     }
 
-    save(): void {
+    addActiveEvent(eventId: EventId): void {
+        const index = this.data.events.indexOf(eventId);
+        if (index === -1) {
+            this.data.events.push(eventId);
+            this.save();
+        }
+    }
+
+    removeActiveEvent(eventId: EventId): void {
+        const index = this.data.events.indexOf(eventId);
+        if (index >= 0) {
+            this.data.events.splice(index, 1);
+            this.save();
+        }
+    }
+
+    private save(): void {
         fs.writeFileSync(
             this.filepath, 
             JSON.stringify(this.data),
@@ -52,7 +73,8 @@ export class UserImpl implements User {
     static createUser(filepath: string, id: UserId, name: string): User {
         const data: UserData = {
             id: id,
-            name: name
+            name: name,
+            events: []
         }
         const user = new UserImpl(filepath, data);
         user.save();

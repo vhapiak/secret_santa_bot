@@ -15,7 +15,7 @@ function main(argv: string[]) {
     
     const telegram = new TelegramBot(argv[2]);
     const users = new UsersManagerImpl(argv[3]);
-    const events = new EventsManagerImpl(argv[3]);
+    const events = new EventsManagerImpl(argv[3], users);
     const output = new OutputManagerImpl(telegram, users);
     const context: Context = {
         users: users,

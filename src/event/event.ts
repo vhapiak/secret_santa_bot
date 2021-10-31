@@ -1,4 +1,4 @@
-import { ChatId, UserId } from '../user/user';
+import { ChatId, User, UserId } from '../user/user';
 
 export enum EventState {
     Registering, // participants can join and leave event
@@ -32,7 +32,7 @@ export interface Event {
      * 
      * @return true if user was added to list
      */
-    toogleParticipant(id: UserId): boolean;
+    toogleParticipant(user: User): boolean;
 
     setState(state: EventState): void;
     setTarget(user: UserId, target: UserId): void;

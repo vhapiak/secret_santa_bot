@@ -5,39 +5,41 @@ import { expect } from 'chai';
 import * as sinon from 'ts-sinon';
 import fs from 'fs';
 import { EventState } from '../../src/event/event';
+import { User } from '../../src/user/user';
 
 describe('Event', () => {
     const any = sinon.default.match.any;
     const filepath = '/tmp/event.json';
     const id = 42;
     const name = 'chat';
-    const owner = 6;
+    const ownerId = 6;
     const target = 7;
     const dataWithoutParticipants = JSON.stringify({
         id: id,
-        owner: owner,
+        owner: ownerId,
         name: name,
         state: EventState.Registering,
         participants: []
     });
     const launchedData = JSON.stringify({
         id: id,
-        owner: owner,
+        owner: ownerId,
         name: name,
         state: EventState.Launched,
         participants: []
     });
     const dataWithParticipants = JSON.stringify({
         id: id,
-        owner: owner,
+        owner: ownerId,
         name: name,
         state: EventState.Launched,
         participants: [{
-            user: owner,
+            user: ownerId,
             target: target
         }]
     });
 
+    const user = sinon.stubInterface<User>();
     const fsStub = sinon.stubObject(fs);
 
     before(() => {
@@ -57,81 +59,90 @@ describe('Event', () => {
     });
 
     it('should save data to file during creation', () => {
-        const event = EventImpl.createEvent(filepath, id, name, owner);
+        const event = EventImpl.createEvent(filepath, id, name, ownerId);
 
         expect(fsStub.writeFileSync.lastCall.args[1]).to.be.equal(dataWithoutParticipants);
 
         expect(event.getId()).to.be.equal(id);
         expect(event.getName()).to.be.equal(name);
-        expect(event.getOwner()).to.be.equal(owner);
+        expect(event.getOwner()).to.be.equal(ownerId);
         expect(event.getState()).to.be.equal(EventState.Registering);
         expect(event.getParticipants().length).to.be.equal(0);
     });
 
     it('should save participants changes to file', () => {
-        const user = new EventImpl(filepath, {
+        const event = new EventImpl(filepath, {
             id: id,
-            owner: owner,
+            owner: ownerId,
             name: name,
             state: EventState.Registering,
             participants: []
         });
 
-        user.toogleParticipant(owner);
-        expect(user.getParticipants().length).to.be.equal(1);
-        expect(user.getParticipants()[0].user).to.be.equal(owner);
-        expect(user.getParticipants()[0].target).to.be.undefined;
+        user.getId.returns(ownerId);
+        event.toogleParticipant(user);
+        expect(event.getParticipants().length).to.be.equal(1);
+        expect(event.getParticipants()[0].user).to.be.equal(ownerId);
+        expect(event.getParticipants()[0].target).to.be.undefined;
+
+        expect(user.addActiveEvent.called);
+        expect(user.addActiveEvent.lastCall.args[0]).to.be.equal(id);
 
         const another = 12;
-        user.toogleParticipant(another);
-        expect(user.getParticipants().length).to.be.equal(2);
-        expect(user.getParticipants()[0].user).to.be.equal(owner);
-        expect(user.getParticipants()[1].user).to.be.equal(another);
+        user.getId.returns(another);
+        event.toogleParticipant(user);
+        expect(event.getParticipants().length).to.be.equal(2);
+        expect(event.getParticipants()[0].user).to.be.equal(ownerId);
+        expect(event.getParticipants()[1].user).to.be.equal(another);
 
-        user.toogleParticipant(owner);
-        expect(user.getParticipants().length).to.be.equal(1);
-        expect(user.getParticipants()[0].user).to.be.equal(another);
+        user.getId.returns(ownerId);
+        event.toogleParticipant(user);
+        expect(event.getParticipants().length).to.be.equal(1);
+        expect(event.getParticipants()[0].user).to.be.equal(another);
+
+        expect(user.removeActiveEvent.called);
+        expect(user.removeActiveEvent.lastCall.args[0]).to.be.equal(id);
     });
 
     it('should save state changes to file', () => {
-        const user = new EventImpl(filepath, {
+        const event = new EventImpl(filepath, {
             id: id,
-            owner: owner,
+            owner: ownerId,
             name: name,
             state: EventState.Registering,
             participants: []
         });
-        user.setState(EventState.Launched);
+        event.setState(EventState.Launched);
 
         expect(fsStub.writeFileSync.lastCall.args[1]).to.be.equal(launchedData);
-        expect(user.getState()).to.be.equal(EventState.Launched);
+        expect(event.getState()).to.be.equal(EventState.Launched);
     });
 
     it('should save target changes to file', () => {
-        const user = new EventImpl(filepath, {
+        const event = new EventImpl(filepath, {
             id: id,
-            owner: owner,
+            owner: ownerId,
             name: name,
             state: EventState.Launched,
             participants: [{
-                user: owner
+                user: ownerId
             }]
         });
-        user.setTarget(owner, target);
+        event.setTarget(ownerId, target);
 
         expect(fsStub.writeFileSync.lastCall.args[1]).to.be.equal(dataWithParticipants);
-        expect(user.getParticipants()[0].target).to.be.equal(target);
+        expect(event.getParticipants()[0].target).to.be.equal(target);
     });
 
     it('should throw in case of wrong target assignment', () => {
-        const user = new EventImpl(filepath, {
+        const event = new EventImpl(filepath, {
             id: id,
-            owner: owner,
+            owner: ownerId,
             name: name,
             state: EventState.Launched,
             participants: []
         });
-        expect(() => user.setTarget(owner, target)).to.throw;
+        expect(() => event.setTarget(ownerId, target)).to.throw;
     });
 
     it('should read data from file', () => {
@@ -142,10 +153,10 @@ describe('Event', () => {
 
         expect(event?.getId()).to.be.equal(id);
         expect(event?.getName()).to.be.equal(name);
-        expect(event?.getOwner()).to.be.equal(owner);
+        expect(event?.getOwner()).to.be.equal(ownerId);
         expect(event?.getState()).to.be.equal(EventState.Launched);
         expect(event?.getParticipants().length).to.be.equal(1);
-        expect(event?.getParticipants()[0].user).to.be.equal(owner);
+        expect(event?.getParticipants()[0].user).to.be.equal(ownerId);
     });
 
     it('should not return user if file not exists', () => {

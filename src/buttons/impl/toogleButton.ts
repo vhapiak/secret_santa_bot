@@ -22,7 +22,7 @@ export class ToogleButton implements Button {
             return;
         }
 
-        const joined = event.toogleParticipant(request.from.getId());
+        const joined = event.toogleParticipant(request.from);
         this.context.output.responseOnClick(
             request.id, 
             joined ? ResponseMessage.EventJoined : ResponseMessage.EventLeft);

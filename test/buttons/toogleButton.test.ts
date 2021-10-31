@@ -51,7 +51,7 @@ describe('ToogleButton', () => {
         });
 
         expect(event.toogleParticipant.called).to.be.true;
-        expect(event.toogleParticipant.lastCall.args[0]).to.be.equal(userId);
+        expect(event.toogleParticipant.lastCall.args[0]).to.be.equal(user);
 
         expect(output.updateEvent.called).to.be.true;
         expect(output.updateEvent.lastCall.args[0]).to.be.equal(chatId);
@@ -80,7 +80,7 @@ describe('ToogleButton', () => {
         });
 
         expect(event.toogleParticipant.called).to.be.true;
-        expect(event.toogleParticipant.lastCall.args[0]).to.be.equal(userId);
+        expect(event.toogleParticipant.lastCall.args[0]).to.be.equal(user);
 
         expect(output.updateEvent.called).to.be.true;
         expect(output.updateEvent.lastCall.args[0]).to.be.equal(chatId);

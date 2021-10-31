@@ -12,20 +12,31 @@ describe('User', () => {
     const name = 'santa';
     const chatId = 6;
     const wishlist = 'wishlist';
+    const firstEventeventId = 7;
+    const secondEventeventId = 8;
     const dataWithoutChat = JSON.stringify({
         id: id,
-        name: name
+        name: name,
+        events: []
     });
     const dataWithChat = JSON.stringify({
         id: id,
         name: name,
-        chatId: chatId
+        events: [],
+        chatId: chatId,
     });
     const dataWithWishlist  = JSON.stringify({
         id: id,
         name: name,
+        events: [],
         wishlist: wishlist
     });
+    const dataWithEvents  = JSON.stringify({
+        id: id,
+        name: name,
+        events: [firstEventeventId, secondEventeventId]
+    });
+
 
     const fsStub = sinon.stubObject(fs);
 
@@ -55,10 +66,38 @@ describe('User', () => {
         expect(user.getChatId()).to.be.undefined;
     });
 
+    it('should save new active events id to file', () => {
+        const user = new UserImpl(filepath, {
+            id: id,
+            name: name,
+            events: []
+        });
+        user.addActiveEvent(firstEventeventId);
+        user.addActiveEvent(secondEventeventId);
+
+        expect(fsStub.writeFileSync.lastCall.args[1]).to.be.equal(dataWithEvents);
+        expect(user.getActiveEvents().length).to.be.equal(2);
+        expect(user.getActiveEvents()[0]).to.be.equal(firstEventeventId);
+        expect(user.getActiveEvents()[1]).to.be.equal(secondEventeventId);
+    });
+
+    it('should remove active event', () => {
+        const user = new UserImpl(filepath, {
+            id: id,
+            name: name,
+            events: [firstEventeventId, secondEventeventId]
+        });
+        user.removeActiveEvent(secondEventeventId);
+
+        expect(user.getActiveEvents().length).to.be.equal(1);
+        expect(user.getActiveEvents()[0]).to.be.equal(firstEventeventId);
+    });
+
     it('should save chat info to file', () => {
         const user = new UserImpl(filepath, {
             id: id,
-            name: name
+            name: name,
+            events: []
         });
         user.bindChat(chatId);
 
@@ -69,7 +108,8 @@ describe('User', () => {
     it('should save wishlist info to file', () => {
         const user = new UserImpl(filepath, {
             id: id,
-            name: name
+            name: name,
+            events: []
         });
         user.setWitshlist(wishlist);
 

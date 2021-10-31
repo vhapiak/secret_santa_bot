@@ -1,4 +1,4 @@
-import { ChatId, UserId } from '../../user/user';
+import { ChatId, User, UserId } from '../../user/user';
 import { Event, EventState, Participant } from '../event';
 
 import fs from 'fs';
@@ -35,16 +35,18 @@ export class EventImpl implements Event {
         return this.data.participants;
     }
 
-    toogleParticipant(id: UserId): boolean {
+    toogleParticipant(user: User): boolean {
         const index = this.data.participants.findIndex(participant => {
-            return participant.user == id;
+            return participant.user == user.getId();
         });
         if (index === -1) {
             this.data.participants.push({
-                user: id
+                user: user.getId()
             });
+            user.addActiveEvent(this.data.id);
         } else {
             this.data.participants.splice(index, 1);
+            user.removeActiveEvent(this.data.id);
         }
         this.save();
         return index === -1;
