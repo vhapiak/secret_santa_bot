@@ -38,6 +38,7 @@ export interface OutputManager {
     sendEvent(chat: ChatId, event: Event): void;
     sendTarget(chat: ChatId, event: Event, target: User): void;
     sendEventCancelation(chat: ChatId, event: Event): void;
+    sendWhishlistUpdate(chat: ChatId, user: User): void;
 
     /**
      * @brief Updates existing telegram message with new event state

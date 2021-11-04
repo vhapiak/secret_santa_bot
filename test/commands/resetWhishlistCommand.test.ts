@@ -9,8 +9,9 @@ import { ErrorMessage, InfoMessage, OutputManager } from '../../src/output/outpu
 import { User } from '../../src/user/user';
 import { CommandsFactoryImpl } from '../../src/commands/impl/commandsFactoryImpl';
 import { Context } from '../../src/context';
+import { CommandUtils } from '../../src/commands/impl/commandUtils';
 
-describe('WhishlistCommand', () => {
+describe('ResetWhishlistCommand', () => {
     const chatId = 42;
     const title = 'Some group';
 
@@ -18,6 +19,8 @@ describe('WhishlistCommand', () => {
     const users = sinon.stubInterface<UsersManager>();
     const events = sinon.stubInterface<EventsManager>();
     const output = sinon.stubInterface<OutputManager>();
+    
+    const sendWhishlistUpdateStub = sinon.default.stub<[User, Context], void>();
 
     const context: Context = {
         users: users,
@@ -25,8 +28,16 @@ describe('WhishlistCommand', () => {
         output: output
     };
 
+    before(() => {
+        sinon.default.replace(CommandUtils, 'sendWhishlistUpdate', sendWhishlistUpdateStub);
+    });
+
     afterEach(() => {
         sinon.default.reset();
+    });
+
+    after(() => {
+        sinon.default.restore();
     });
 
     it('should reset wishlist', () => {
@@ -49,6 +60,9 @@ describe('WhishlistCommand', () => {
         expect(output.sendInfo.called).to.be.true;
         expect(output.sendInfo.lastCall.args[0]).to.be.equal(chatId);
         expect(output.sendInfo.lastCall.args[1]).to.be.equal(InfoMessage.WishlistReset);
+
+        expect(sendWhishlistUpdateStub.called).to.be.true;
+        expect(sendWhishlistUpdateStub.lastCall.args[0]).to.be.equal(user);
     });
 
     it('should check that chat is private', () => {
@@ -68,5 +82,7 @@ describe('WhishlistCommand', () => {
         expect(output.sendError.called).to.be.true;
         expect(output.sendError.lastCall.args[0]).to.be.equal(chatId);
         expect(output.sendError.lastCall.args[1]).to.be.equal(ErrorMessage.NotPrivateChat);
+
+        expect(sendWhishlistUpdateStub.called).to.be.false;
     });
 });

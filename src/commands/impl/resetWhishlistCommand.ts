@@ -1,6 +1,7 @@
 import { Context } from '../../context';
 import { ErrorMessage, InfoMessage } from '../../output/outputManager';
 import { Command, Message } from '../command';
+import { CommandUtils } from './commandUtils';
 
 export class ResetWishlistCommand implements Command {
     constructor(private context: Context) {
@@ -14,6 +15,7 @@ export class ResetWishlistCommand implements Command {
         }
         message.from.setWitshlist(undefined);
         this.context.output.sendInfo(message.chat.id, InfoMessage.WishlistReset);
+        CommandUtils.sendWhishlistUpdate(message.from, this.context);
         return undefined;
     }
 }

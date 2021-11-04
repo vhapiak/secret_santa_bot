@@ -160,6 +160,26 @@ export class OutputManagerImpl implements OutputManager {
             });
     }
 
+    sendWhishlistUpdate(chat: ChatId, user: User): void {
+        const message = multiline()
+            .append(`[${user.getName()}](tg://user?id=${user.getId()}) `);
+        if (user.getWishlist()) {
+            message
+                .append(`just updated their whishlist:`)
+                .newLine()
+                .newLine(user.getWishlist());
+        } else {
+            message.append(`just reset their whishlist.`);
+        }
+
+        this.bot.sendMessage(
+            chat,
+            message.text(),
+            {
+                parse_mode: 'MarkdownV2'
+            });
+    }
+
     updateEvent(chat: ChatId, messageId: number, event: Event): void {
         const message = this.renderEventMessage(event);
         this.bot.editMessageText(
