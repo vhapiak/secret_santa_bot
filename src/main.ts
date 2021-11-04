@@ -8,15 +8,15 @@ import { SecretSantaBot } from './secretSantaBot';
 import { UsersManagerImpl } from './user/impl/usersManagerImpl';
 
 function main(argv: string[]) {
-    if (argv.length < 4) {
-        console.log('Usage: main.js <telegram-token> <db-directory>');
+    if (argv.length < 5) {
+        console.log('Usage: main.js <telegram-name> <telegram-token> <db-directory>');
         return;
     }
     
-    const telegram = new TelegramBot(argv[2]);
-    const users = new UsersManagerImpl(argv[3]);
-    const events = new EventsManagerImpl(argv[3], users);
-    const output = new OutputManagerImpl(telegram, users);
+    const telegram = new TelegramBot(argv[3]);
+    const users = new UsersManagerImpl(argv[4]);
+    const events = new EventsManagerImpl(argv[4], users);
+    const output = new OutputManagerImpl(argv[2], telegram, users);
     const context: Context = {
         users: users,
         events: events,

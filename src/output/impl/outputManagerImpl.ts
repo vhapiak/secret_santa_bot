@@ -89,7 +89,10 @@ type InteractiveMessage = {
 }
 
 export class OutputManagerImpl implements OutputManager {
-    constructor(private bot: TelegramBot, private users: UsersManager) {
+    constructor(
+        private botName: string,
+        private bot: TelegramBot, 
+        private users: UsersManager) {
 
     }
 
@@ -257,9 +260,11 @@ export class OutputManagerImpl implements OutputManager {
         }
 
         if (hasUnregistredUser) {
-            builder.newLine();
-            builder.newLine(`_Users with \u{1F6AB} should write message to me to allow notifications\\.`);
-            builder.append(`Until then event can't be launched\\._`);
+            builder
+                .newLine()
+                .newLine(`_Users with \u{1F6AB} should write [message](https://t.me/${this.botName})`)
+                .append(`to me to allow notifications\\.`)
+                .append(`Until then event can't be launched\\._`);
         }
         
         return builder.text();

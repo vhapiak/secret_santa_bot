@@ -29,7 +29,7 @@ describe('OutputManager', () => {
     });
 
     it('should send error message', () => {
-        const manager = new OutputManagerImpl(bot, users);
+        const manager = new OutputManagerImpl('', bot, users);
 
         manager.sendError(chatId, ErrorMessage.AlreadyHasEvent);
         expect(bot.sendMessage.calledOnce).to.be.true;
@@ -41,14 +41,14 @@ describe('OutputManager', () => {
     });
 
     it('should send info message', () => {
-        const manager = new OutputManagerImpl(bot, users);
+        const manager = new OutputManagerImpl('', bot, users);
 
         manager.sendInfo(chatId, InfoMessage.Help);
         expect(bot.sendMessage.calledOnce).to.be.true;
     });
 
     it('should send event message', () => {
-        const manager = new OutputManagerImpl(bot, users);
+        const manager = new OutputManagerImpl('', bot, users);
 
         event.getName.returns(name);
         event.getState.returns(EventState.Registering);
@@ -74,7 +74,7 @@ describe('OutputManager', () => {
     });
 
     it('should send target message', () => {
-        const manager = new OutputManagerImpl(bot, users);
+        const manager = new OutputManagerImpl('', bot, users);
 
         event.getName.returns(name);
         owner.getId.returns(ownerId);
@@ -85,7 +85,7 @@ describe('OutputManager', () => {
     });
 
     it('should update event message', () => {
-        const manager = new OutputManagerImpl(bot, users);
+        const manager = new OutputManagerImpl('', bot, users);
 
         event.getName.returns(name);
         event.getState.returns(EventState.Registering);
@@ -112,7 +112,7 @@ describe('OutputManager', () => {
     });
 
     it('should response to query', () => {
-        const manager = new OutputManagerImpl(bot, users);
+        const manager = new OutputManagerImpl('', bot, users);
 
         manager.responseOnClick('query', ResponseMessage.AlreadyLaunched);
         expect(bot.answerCallbackQuery.calledOnce).to.be.true;
