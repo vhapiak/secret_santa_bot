@@ -35,7 +35,7 @@ export class SecretSantaBot {
         try {
             this.processTextMessageImpl(msg);
         } catch (error) {
-            this.bot.sendMessage(msg.chat.id, 'Internal error!');
+            this.bot.sendMessage(msg.chat.id, 'Sorry, looks like bot is sick, please, try latter\\!');
         }
     }
 
@@ -46,7 +46,7 @@ export class SecretSantaBot {
             this.bot.answerCallbackQuery(
                 query.id,
                 {
-                    text: 'Internal error!'
+                    text: 'Sorry, looks like bot is sick, please, try latter\\!'
                 }
             );
         }

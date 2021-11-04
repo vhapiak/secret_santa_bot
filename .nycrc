@@ -4,6 +4,11 @@
   "extension": [
     ".ts"
   ],
+  "exclude": [
+    "visual-test/",
+    "test/",
+    "coverage/"
+  ],
   "sourceMap": true,
   "reporter": [
     "lcov",
