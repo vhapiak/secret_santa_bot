@@ -13,9 +13,9 @@ export class ResetWishlistCommand implements Command {
             this.context.output.sendError(message.chat.id, ErrorMessage.NotPrivateChat);
             return undefined;
         }
-        message.from.setWitshlist(undefined);
+        message.from.setWishlist(undefined);
         this.context.output.sendInfo(message.chat.id, InfoMessage.WishlistReset);
-        CommandUtils.sendWhishlistUpdate(message.from, this.context);
+        CommandUtils.sendWishlistUpdate(message.from, this.context);
         return undefined;
     }
 }

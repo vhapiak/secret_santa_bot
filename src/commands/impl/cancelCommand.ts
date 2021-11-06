@@ -24,7 +24,7 @@ export class CancelCommand implements Command {
             const user = this.context.users.getUser(participants[i].user);
             const chatId = user?.getChatId();
             if (chatId) {
-                this.context.output.sendEventCancelation(chatId, event);
+                this.context.output.sendEventCancellation(chatId, event);
             }
         }
  

@@ -12,8 +12,8 @@ describe('User', () => {
     const name = 'santa';
     const chatId = 6;
     const wishlist = 'wishlist';
-    const firstEventeventId = 7;
-    const secondEventeventId = 8;
+    const firstEventId = 7;
+    const secondEventId = 8;
     const dataWithoutChat = JSON.stringify({
         id: id,
         name: name,
@@ -34,7 +34,7 @@ describe('User', () => {
     const dataWithEvents  = JSON.stringify({
         id: id,
         name: name,
-        events: [firstEventeventId, secondEventeventId]
+        events: [firstEventId, secondEventId]
     });
 
 
@@ -72,25 +72,25 @@ describe('User', () => {
             name: name,
             events: []
         });
-        user.addActiveEvent(firstEventeventId);
-        user.addActiveEvent(secondEventeventId);
+        user.addActiveEvent(firstEventId);
+        user.addActiveEvent(secondEventId);
 
         expect(fsStub.writeFileSync.lastCall.args[1]).to.be.equal(dataWithEvents);
         expect(user.getActiveEvents().length).to.be.equal(2);
-        expect(user.getActiveEvents()[0]).to.be.equal(firstEventeventId);
-        expect(user.getActiveEvents()[1]).to.be.equal(secondEventeventId);
+        expect(user.getActiveEvents()[0]).to.be.equal(firstEventId);
+        expect(user.getActiveEvents()[1]).to.be.equal(secondEventId);
     });
 
     it('should remove active event', () => {
         const user = new UserImpl(filepath, {
             id: id,
             name: name,
-            events: [firstEventeventId, secondEventeventId]
+            events: [firstEventId, secondEventId]
         });
-        user.removeActiveEvent(secondEventeventId);
+        user.removeActiveEvent(secondEventId);
 
         expect(user.getActiveEvents().length).to.be.equal(1);
-        expect(user.getActiveEvents()[0]).to.be.equal(firstEventeventId);
+        expect(user.getActiveEvents()[0]).to.be.equal(firstEventId);
     });
 
     it('should save chat info to file', () => {
@@ -111,7 +111,7 @@ describe('User', () => {
             name: name,
             events: []
         });
-        user.setWitshlist(wishlist);
+        user.setWishlist(wishlist);
 
         expect(fsStub.writeFileSync.lastCall.args[1]).to.be.equal(dataWithWishlist);
         expect(user.getWishlist()).to.be.equal(wishlist);

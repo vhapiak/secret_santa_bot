@@ -1,7 +1,7 @@
 import { Context } from '../../context';
 import { ErrorMessage, InfoMessage } from '../../output/outputManager';
 import { Command, Message } from '../command';
-import { UpdateWhishlistDialog } from './updateWishlistDialog';
+import { UpdateWishlistDialog } from './updateWishlistDialog';
 
 export class WishlistCommand implements Command {
     constructor(private context: Context) {
@@ -14,6 +14,6 @@ export class WishlistCommand implements Command {
             return undefined;
         }
         this.context.output.sendInfo(message.chat.id, InfoMessage.WaitingForWishlist);
-        return new UpdateWhishlistDialog(this.context);
+        return new UpdateWishlistDialog(this.context);
     }
 }

@@ -107,7 +107,7 @@ class StubCommand implements Command {
         this.output.sendEvent(message.chat.id, launchedEvent);
         await delay(100);
 
-        this.output.sendEventCancelation(message.chat.id, launchedEvent);
+        this.output.sendEventCancellation(message.chat.id, launchedEvent);
         await delay(100);
 
         this.output.sendTarget(message.chat.id, launchedEvent, firstUser);
@@ -117,10 +117,10 @@ class StubCommand implements Command {
         this.output.sendTarget(message.chat.id, launchedEvent, thirdUser);
         await delay(100);
 
-        this.output.sendWhishlistUpdate(message.chat.id, firstUser);
+        this.output.sendWishlistUpdate(message.chat.id, firstUser);
         await delay(100);
 
-        this.output.sendWhishlistUpdate(message.chat.id, thirdUser);
+        this.output.sendWishlistUpdate(message.chat.id, thirdUser);
         await delay(100);
     }
 }

@@ -80,7 +80,7 @@ describe('Event', () => {
         });
 
         user.getId.returns(ownerId);
-        event.toogleParticipant(user);
+        event.toggleParticipant(user);
         expect(event.getParticipants().length).to.be.equal(1);
         expect(event.getParticipants()[0].user).to.be.equal(ownerId);
         expect(event.getParticipants()[0].target).to.be.undefined;
@@ -90,13 +90,13 @@ describe('Event', () => {
 
         const another = 12;
         user.getId.returns(another);
-        event.toogleParticipant(user);
+        event.toggleParticipant(user);
         expect(event.getParticipants().length).to.be.equal(2);
         expect(event.getParticipants()[0].user).to.be.equal(ownerId);
         expect(event.getParticipants()[1].user).to.be.equal(another);
 
         user.getId.returns(ownerId);
-        event.toogleParticipant(user);
+        event.toggleParticipant(user);
         expect(event.getParticipants().length).to.be.equal(1);
         expect(event.getParticipants()[0].user).to.be.equal(another);
 

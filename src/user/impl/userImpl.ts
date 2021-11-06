@@ -38,7 +38,7 @@ export class UserImpl implements User {
         this.save();
     }
 
-    setWitshlist(wishlist: string | undefined): void {
+    setWishlist(wishlist: string | undefined): void {
         this.data.wishlist = wishlist;
         this.save();
     }

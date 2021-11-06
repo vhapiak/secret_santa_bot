@@ -81,7 +81,7 @@ describe('FinishCommand', () => {
         expect(output.sendError.lastCall.args[1]).to.be.equal(ErrorMessage.NoEvent);
     });
 
-    it('should check that event is laucnhed', () => {
+    it('should check that event is launched', () => {
         const factory = new CommandsFactoryImpl(context);
         const command = factory.createCommand('/finish');
         

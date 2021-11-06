@@ -1,7 +1,7 @@
 import { ButtonsFactory } from '../buttonsFactory';
 import { Button } from '../button';
 import { Context } from '../../context';
-import { ToogleButton } from './toogleButton';
+import { ToggleButton } from './toggleButton';
 
 export class ButtonsFactoryImpl implements ButtonsFactory {
     constructor(private context: Context) {
@@ -10,8 +10,8 @@ export class ButtonsFactoryImpl implements ButtonsFactory {
 
     createButton(name: string): Button | undefined {
         switch (name) {
-            case 'toogle':
-                return new ToogleButton(this.context);
+            case 'toggle':
+                return new ToggleButton(this.context);
         }
         return undefined;
     }

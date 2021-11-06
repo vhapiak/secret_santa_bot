@@ -6,9 +6,9 @@ import { CreateCommand } from './createCommand';
 import { FinishCommand } from './finishCommand';
 import { HelpCommand } from './helpCommand';
 import { LaunchCommand } from './launchCommand';
-import { ResetWishlistCommand } from './resetWhishlistCommand';
+import { ResetWishlistCommand } from './resetWishlistCommand';
 import { StatusCommand } from './statusCommand';
-import { WishlistCommand } from './whishlistCommand';
+import { WishlistCommand } from './wishlistCommand';
 
 export class CommandsFactoryImpl implements CommandsFactory {
     constructor(private context: Context) {
@@ -30,9 +30,9 @@ export class CommandsFactoryImpl implements CommandsFactory {
                 return new StatusCommand(this.context);
             case '/launch':
                 return new LaunchCommand(this.context);
-            case '/whishlist':
+            case '/wishlist':
                 return new WishlistCommand(this.context);
-            case '/resetWhishlist':
+            case '/resetWishlist':
                 return new ResetWishlistCommand(this.context);
         }
         return new HelpCommand(this.context);

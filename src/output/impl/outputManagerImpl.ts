@@ -8,13 +8,13 @@ import { ErrorMessage, InfoMessage, OutputManager, ResponseMessage } from '../ou
 function errorToMessage(error: ErrorMessage): string {
     switch (error) {
         case ErrorMessage.InternalError:
-            return `Sorry, looks like bot is sick, please, try latter`;
+            return `Sorry, looks like bot is sick. Please, try again latter`;
         case ErrorMessage.AlreadyHasEvent:
-            return `This group already has secret santa event`;
+            return `This group already has a Secret Santa event`;
         case ErrorMessage.NoEvent:
-            return `This group doesn't have active event\\. You can create new one with /create`;
+            return `This group doesn't have an active event\\. You can create a new one with /create`;
         case ErrorMessage.PermissionDenied:
-            return `You are not permitted to execute this operation`;
+            return `You are not permitted to execute this action`;
         case ErrorMessage.EventIsNotLaunched:
             return `Event isn't launched, use /cancel to remove it`;
         case ErrorMessage.EventAlreadyLaunched:
@@ -23,8 +23,8 @@ function errorToMessage(error: ErrorMessage): string {
             return `Event must have at least 2 participants`;
         case ErrorMessage.NotAuthorizedUser:
             return multiline()
-                .append( `I can't write message to some of the participants\\.`)
-                .append(`Please, ask them to send me private message and try aggain`)
+                .append( `I can't write messages to some of the participants\\.`)
+                .append(`Please, ask them to send me a private message and try again`)
                 .text();
         case ErrorMessage.NotPrivateChat:
             return `This command available only in private chats with me`;
@@ -33,18 +33,18 @@ function errorToMessage(error: ErrorMessage): string {
 
 function helpMessage(): string {
     return multiline()
-        .append(`Hi, I'm a Secret Santa Bot and I help people with orginizing New Year events\\.`)
+        .append(`Hi, I'm a Secret Santa Bot and I help people with organizing New Year events\\.`)
         .newLine()
         .newLine(`If you are event participant: just relax, I will send you all important information later\\.`)
-        .newLine(`You can add your /wishlist and help your secret santa with choosing a present\\.`)
+        .newLine(`You can add your /wishlist and help your Secret Santa with choosing a present\\.`)
         .newLine(`Use /resetWishlist to reset your wishlist\\.`)
         .newLine()
-        .newLine(`If you want to orginize new event: just add me to group with participants and type /create there\\.`)
-        .append(`When all participants will join event you can type /launch to assign target for each participant\\.`)
+        .newLine(`If you want to organize new event: just add me to the group with participants and type /create there\\.`)
+        .append(`When all participants will join the event you can type /launch to assign target for each participant\\.`)
         .newLine()
-        .newLine(`Other usefull commands are\\:`)
+        .newLine(`Other useful commands are\\:`)
         .newLine(`/status \\- to see latest state of event\\.`)
-        .newLine(`/cancel \\- to cancel event \\(participants will be notified about cancelation\\)\\.`)
+        .newLine(`/cancel \\- to cancel event \\(participants will be notified about cancellation\\)\\.`)
         .newLine(`/finish \\- to end past event and have possibility to create new one\\.`)
         .text()
 }
@@ -60,7 +60,7 @@ function infoToMessage(info: InfoMessage): string {
         case InfoMessage.EventLaunched:
             return `Event has launched\\! Check private messages to see your target\\!`;
         case InfoMessage.WaitingForWishlist:
-            return `Please send *text* message with your wishlsit\\!`;
+            return `Please send a *text* message with your wishlist\\!`;
         case InfoMessage.WishlistUpdated:
             return `Your wishlist has updated\\! It will be visible for your secret santa\\!`;
         case InfoMessage.WishlistReset:
@@ -129,17 +129,17 @@ export class OutputManagerImpl implements OutputManager {
 
     sendTarget(chat: ChatId, event: Event, target: User): void {
         const builder = multiline()
-            .append(`Secret santa event in _${event.getName()}_ has been laucnhed\\.`)
-            .append(`You should prepare present for [${target.getName()}](tg://user?id=${target.getId()})`)
+            .append(`Secret santa event in _${event.getName()}_ has launched\\.`)
+            .append(`You should prepare a present for [${target.getName()}](tg://user?id=${target.getId()})`)
             .newLine();
 
-        const whishlist = target.getWishlist();
-        if (whishlist) {
+        const wishlist = target.getWishlist();
+        if (wishlist) {
             builder
                 .newLine(`Wishlist of [${target.getName()}](tg://user?id=${target.getId()}):`)
-                .newLine(this.escapeTelegramSymbols(whishlist));
+                .newLine(this.escapeTelegramSymbols(wishlist));
         } else {
-            builder.newLine(`Unfortunately this person doesn't have a wishlist\\!`);
+            builder.newLine(`Unfortunately, this person doesn't have a wishlist\\!`);
         }
         
         this.bot.sendMessage(
@@ -150,7 +150,7 @@ export class OutputManagerImpl implements OutputManager {
             });
     }
 
-    sendEventCancelation(chat: ChatId, event: Event): void {
+    sendEventCancellation(chat: ChatId, event: Event): void {
         const message = multiline().
             append(`Secret Santa event has canceled in group _${event.getName()}_\\.`)
             .newLine(`Ignore all previous messages regarding this group`)
@@ -164,17 +164,17 @@ export class OutputManagerImpl implements OutputManager {
             });
     }
 
-    sendWhishlistUpdate(chat: ChatId, user: User): void {
+    sendWishlistUpdate(chat: ChatId, user: User): void {
         const message = multiline()
             .append(`[${user.getName()}](tg://user?id=${user.getId()}) `);
-        const whishlist = user.getWishlist();
-        if (whishlist) {
+        const wishlist = user.getWishlist();
+        if (wishlist) {
             message
-                .append(`just updated their whishlist:`)
+                .append(`has updated their wishlist:`)
                 .newLine()
-                .newLine(this.escapeTelegramSymbols(whishlist));
+                .newLine(this.escapeTelegramSymbols(wishlist));
         } else {
-            message.append(`just reset their whishlist`);
+            message.append(`has reset their wishlist`);
         }
 
         this.bot.sendMessage(
@@ -229,7 +229,7 @@ export class OutputManagerImpl implements OutputManager {
     }
 
     private renderEventText(event: Event): string {
-        const status = event.getState() === EventState.Launched ? 'Laucnhed' : 'Registering';
+        const status = event.getState() === EventState.Launched ? 'Launched' : 'Registering';
         const owner = this.users.getUser(event.getOwner());
         if (!owner) {
             throw new Error('Cannot find owner information');
@@ -251,13 +251,12 @@ export class OutputManagerImpl implements OutputManager {
         let hasUnregistredUser = false;
         for (let i = 0; i < participants.length; ++i) {
             const user = this.users.getUser(participants[i].user);
-            if (!user) {
-                throw new Error('Cannot find user information');
-            }
-            builder.newLine(`${i + 1}\\. [${user.getName()}](tg://user?id=${user.getId()})`);
-            if (user.getChatId() === undefined) {
-                hasUnregistredUser = true;
-                builder.append(`\u{1F6AB}`);
+            if (user) {
+                builder.newLine(`${i + 1}\\. [${user.getName()}](tg://user?id=${user.getId()})`);
+                if (user.getChatId() === undefined) {
+                    hasUnregistredUser = true;
+                    builder.append(`\u{1F6AB}`);
+                }
             }
         }
 
@@ -276,7 +275,7 @@ export class OutputManagerImpl implements OutputManager {
         if (event.getState() === EventState.Launched) {
             return [];
         }
-        return [{text: 'Join/Leave', callback_data: 'toogle'}];
+        return [{text: 'Join/Leave', callback_data: 'toggle'}];
     }
 
     private escapeTelegramSymbols(str: string): string {

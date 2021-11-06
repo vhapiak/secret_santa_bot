@@ -70,9 +70,9 @@ describe('CancelCommand', () => {
         expect(events.removeEvent.called).to.be.true;
         expect(events.removeEvent.lastCall.args[0]).to.be.equal(chatId);
 
-        expect(output.sendEventCancelation.called).to.be.true;
-        expect(output.sendEventCancelation.lastCall.args[0]).to.be.equal(userId);
-        expect(output.sendEventCancelation.lastCall.args[1]).to.be.equal(event);
+        expect(output.sendEventCancellation.called).to.be.true;
+        expect(output.sendEventCancellation.lastCall.args[0]).to.be.equal(userId);
+        expect(output.sendEventCancellation.lastCall.args[1]).to.be.equal(event);
 
         expect(output.sendInfo.called).to.be.true;
         expect(output.sendInfo.lastCall.args[0]).to.be.equal(chatId);

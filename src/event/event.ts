@@ -28,11 +28,11 @@ export interface Event {
     /**
      * @brief Add user to participants or remove him from them if user already in list
      * 
-     * @param id Telegram user id to toogle
+     * @param id Telegram user id to toggle
      * 
      * @return true if user was added to list
      */
-    toogleParticipant(user: User): boolean;
+    toggleParticipant(user: User): boolean;
 
     setState(state: EventState): void;
     setTarget(user: UserId, target: UserId): void;

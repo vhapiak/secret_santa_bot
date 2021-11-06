@@ -11,7 +11,7 @@ import { CommandsFactoryImpl } from '../../src/commands/impl/commandsFactoryImpl
 import { Context } from '../../src/context';
 import { CommandUtils } from '../../src/commands/impl/commandUtils';
 
-describe('ResetWhishlistCommand', () => {
+describe('ResetWishlistCommand', () => {
     const chatId = 42;
     const title = 'Some group';
 
@@ -20,7 +20,7 @@ describe('ResetWhishlistCommand', () => {
     const events = sinon.stubInterface<EventsManager>();
     const output = sinon.stubInterface<OutputManager>();
     
-    const sendWhishlistUpdateStub = sinon.default.stub<[User, Context], void>();
+    const sendWishlistUpdateStub = sinon.default.stub<[User, Context], void>();
 
     const context: Context = {
         users: users,
@@ -29,7 +29,7 @@ describe('ResetWhishlistCommand', () => {
     };
 
     before(() => {
-        sinon.default.replace(CommandUtils, 'sendWhishlistUpdate', sendWhishlistUpdateStub);
+        sinon.default.replace(CommandUtils, 'sendWishlistUpdate', sendWishlistUpdateStub);
     });
 
     afterEach(() => {
@@ -42,7 +42,7 @@ describe('ResetWhishlistCommand', () => {
 
     it('should reset wishlist', () => {
         const factory = new CommandsFactoryImpl(context);
-        const command = factory.createCommand('/resetWhishlist');
+        const command = factory.createCommand('/resetWishlist');
         
         command.process({
             from: user,
@@ -54,20 +54,20 @@ describe('ResetWhishlistCommand', () => {
             data: ''
         });
 
-        expect(user.setWitshlist.called).to.be.true;
-        expect(user.setWitshlist.lastCall.args[0]).to.be.undefined;
+        expect(user.setWishlist.called).to.be.true;
+        expect(user.setWishlist.lastCall.args[0]).to.be.undefined;
 
         expect(output.sendInfo.called).to.be.true;
         expect(output.sendInfo.lastCall.args[0]).to.be.equal(chatId);
         expect(output.sendInfo.lastCall.args[1]).to.be.equal(InfoMessage.WishlistReset);
 
-        expect(sendWhishlistUpdateStub.called).to.be.true;
-        expect(sendWhishlistUpdateStub.lastCall.args[0]).to.be.equal(user);
+        expect(sendWishlistUpdateStub.called).to.be.true;
+        expect(sendWishlistUpdateStub.lastCall.args[0]).to.be.equal(user);
     });
 
     it('should check that chat is private', () => {
         const factory = new CommandsFactoryImpl(context);
-        const command = factory.createCommand('/resetWhishlist');
+        const command = factory.createCommand('/resetWishlist');
 
         command.process({
             from: user,
@@ -83,6 +83,6 @@ describe('ResetWhishlistCommand', () => {
         expect(output.sendError.lastCall.args[0]).to.be.equal(chatId);
         expect(output.sendError.lastCall.args[1]).to.be.equal(ErrorMessage.NotPrivateChat);
 
-        expect(sendWhishlistUpdateStub.called).to.be.false;
+        expect(sendWishlistUpdateStub.called).to.be.false;
     });
 });

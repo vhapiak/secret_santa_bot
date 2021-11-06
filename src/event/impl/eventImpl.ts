@@ -35,7 +35,7 @@ export class EventImpl implements Event {
         return this.data.participants;
     }
 
-    toogleParticipant(user: User): boolean {
+    toggleParticipant(user: User): boolean {
         const index = this.data.participants.findIndex(participant => {
             return participant.user == user.getId();
         });

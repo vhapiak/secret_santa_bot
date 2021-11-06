@@ -18,7 +18,7 @@ export interface User {
      */
     bindChat(chatId: ChatId): void;
 
-    setWitshlist(wishlist: string | undefined): void;
+    setWishlist(wishlist: string | undefined): void;
 
     addActiveEvent(eventId: EventId): void;
     removeActiveEvent(eventId: EventId): void;

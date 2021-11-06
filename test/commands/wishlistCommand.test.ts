@@ -10,7 +10,7 @@ import { User } from '../../src/user/user';
 import { CommandsFactoryImpl } from '../../src/commands/impl/commandsFactoryImpl';
 import { Context } from '../../src/context';
 
-describe('WhishlistCommand', () => {
+describe('WishlistCommand', () => {
     const chatId = 42;
     const title = 'Some group';
 
@@ -31,7 +31,7 @@ describe('WhishlistCommand', () => {
 
     it('should send invitation to send wishlist', () => {
         const factory = new CommandsFactoryImpl(context);
-        const command = factory.createCommand('/whishlist');
+        const command = factory.createCommand('/wishlist');
         
         const nextCommand = command.process({
             from: user,
@@ -51,7 +51,7 @@ describe('WhishlistCommand', () => {
 
     it('should check that chat is private', () => {
         const factory = new CommandsFactoryImpl(context);
-        const command = factory.createCommand('/whishlist');
+        const command = factory.createCommand('/wishlist');
 
         const nextCommand = command.process({
             from: user,

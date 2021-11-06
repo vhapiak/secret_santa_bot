@@ -88,34 +88,34 @@ describe('CommandUtils', () => {
         sinon.default.reset();
     });
 
-    it('should send whishlist to all', () => {
-        CommandUtils.sendWhishlistUpdate(target, context);
+    it('should send wishlist to all', () => {
+        CommandUtils.sendWishlistUpdate(target, context);
 
-        expect(output.sendWhishlistUpdate.calledTwice).to.be.true;
-        expect(output.sendWhishlistUpdate.firstCall.args[0]).to.be.equal(secondSantaId);
-        expect(output.sendWhishlistUpdate.firstCall.args[1]).to.be.equal(target);
-        expect(output.sendWhishlistUpdate.lastCall.args[0]).to.be.equal(firstSantaId);
-        expect(output.sendWhishlistUpdate.lastCall.args[1]).to.be.equal(target);
+        expect(output.sendWishlistUpdate.calledTwice).to.be.true;
+        expect(output.sendWishlistUpdate.firstCall.args[0]).to.be.equal(secondSantaId);
+        expect(output.sendWishlistUpdate.firstCall.args[1]).to.be.equal(target);
+        expect(output.sendWishlistUpdate.lastCall.args[0]).to.be.equal(firstSantaId);
+        expect(output.sendWishlistUpdate.lastCall.args[1]).to.be.equal(target);
     });
 
-    it('should send whishlist only to the second', () => {
+    it('should send wishlist only to the second', () => {
         // here user is not a target
         firstEvent.getParticipants.returns(thirdEventParticipants);
 
-        CommandUtils.sendWhishlistUpdate(target, context);
+        CommandUtils.sendWishlistUpdate(target, context);
 
-        expect(output.sendWhishlistUpdate.calledOnce).to.be.true;
-        expect(output.sendWhishlistUpdate.firstCall.args[0]).to.be.equal(firstSantaId);
-        expect(output.sendWhishlistUpdate.firstCall.args[1]).to.be.equal(target);
+        expect(output.sendWishlistUpdate.calledOnce).to.be.true;
+        expect(output.sendWishlistUpdate.firstCall.args[0]).to.be.equal(firstSantaId);
+        expect(output.sendWishlistUpdate.firstCall.args[1]).to.be.equal(target);
     });
 
     it('should check event', () => {
         target.getActiveEvents.returns([firstEventId]);
         events.getEvent.withArgs(firstEventId).returns(undefined);
 
-        CommandUtils.sendWhishlistUpdate(target, context);
+        CommandUtils.sendWishlistUpdate(target, context);
 
-        expect(output.sendWhishlistUpdate.called).to.be.false;
+        expect(output.sendWishlistUpdate.called).to.be.false;
     });
 
     it('should check santa chat id', () => {
@@ -123,10 +123,10 @@ describe('CommandUtils', () => {
         // this should never happen in real environment
         secondSanta.getChatId.returns(undefined);
 
-        CommandUtils.sendWhishlistUpdate(target, context);
+        CommandUtils.sendWishlistUpdate(target, context);
 
-        expect(output.sendWhishlistUpdate.calledOnce).to.be.true;
-        expect(output.sendWhishlistUpdate.firstCall.args[0]).to.be.equal(firstSantaId);
-        expect(output.sendWhishlistUpdate.firstCall.args[1]).to.be.equal(target);
+        expect(output.sendWishlistUpdate.calledOnce).to.be.true;
+        expect(output.sendWishlistUpdate.firstCall.args[0]).to.be.equal(firstSantaId);
+        expect(output.sendWishlistUpdate.firstCall.args[1]).to.be.equal(target);
     });
 });

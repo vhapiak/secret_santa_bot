@@ -12,7 +12,7 @@ import { Event, EventState } from '../../src/event/event';
 import { ButtonsFactoryImpl } from '../../src/buttons/impl/buttonsFactoryImpl';
 import { Button } from '../../src/buttons/button';
 
-describe('ToogleButton', () => {
+describe('ToggleButton', () => {
     const requestId = 'request';
     const chatId = 42;
     const messageId = 142;
@@ -36,11 +36,11 @@ describe('ToogleButton', () => {
 
     it('should add participant to event', () => {
         const factory = new ButtonsFactoryImpl(context);
-        const button = factory.createButton('toogle') as Button;
+        const button = factory.createButton('toggle') as Button;
         
         events.getEvent.withArgs(chatId).returns(event);
         event.getState.returns(EventState.Registering);
-        event.toogleParticipant.returns(true);
+        event.toggleParticipant.returns(true);
         user.getId.returns(userId);
 
         button.process({
@@ -50,8 +50,8 @@ describe('ToogleButton', () => {
             messageId: messageId
         });
 
-        expect(event.toogleParticipant.called).to.be.true;
-        expect(event.toogleParticipant.lastCall.args[0]).to.be.equal(user);
+        expect(event.toggleParticipant.called).to.be.true;
+        expect(event.toggleParticipant.lastCall.args[0]).to.be.equal(user);
 
         expect(output.updateEvent.called).to.be.true;
         expect(output.updateEvent.lastCall.args[0]).to.be.equal(chatId);
@@ -65,11 +65,11 @@ describe('ToogleButton', () => {
 
     it('should remove participant from event', () => {
         const factory = new ButtonsFactoryImpl(context);
-        const button = factory.createButton('toogle') as Button;
+        const button = factory.createButton('toggle') as Button;
         
         events.getEvent.withArgs(chatId).returns(event);
         event.getState.returns(EventState.Registering);
-        event.toogleParticipant.returns(false);
+        event.toggleParticipant.returns(false);
         user.getId.returns(userId);
 
         button.process({
@@ -79,8 +79,8 @@ describe('ToogleButton', () => {
             messageId: messageId
         });
 
-        expect(event.toogleParticipant.called).to.be.true;
-        expect(event.toogleParticipant.lastCall.args[0]).to.be.equal(user);
+        expect(event.toggleParticipant.called).to.be.true;
+        expect(event.toggleParticipant.lastCall.args[0]).to.be.equal(user);
 
         expect(output.updateEvent.called).to.be.true;
         expect(output.updateEvent.lastCall.args[0]).to.be.equal(chatId);
@@ -94,7 +94,7 @@ describe('ToogleButton', () => {
 
     it('should replace message for canceled', () => {
         const factory = new ButtonsFactoryImpl(context);
-        const button = factory.createButton('toogle') as Button;
+        const button = factory.createButton('toggle') as Button;
         
         events.getEvent.withArgs(chatId).returns(undefined);
 
@@ -116,7 +116,7 @@ describe('ToogleButton', () => {
 
     it('should prevent modification of launched event', () => {
         const factory = new ButtonsFactoryImpl(context);
-        const button = factory.createButton('toogle') as Button;
+        const button = factory.createButton('toggle') as Button;
         
         events.getEvent.withArgs(chatId).returns(event);
         event.getState.returns(EventState.Launched);

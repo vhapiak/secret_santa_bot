@@ -3,7 +3,7 @@ import { EventState } from '../../event/event';
 import { ResponseMessage } from '../../output/outputManager';
 import { Button, Request } from '../button';
 
-export class ToogleButton implements Button {
+export class ToggleButton implements Button {
     constructor(private context: Context) {
 
     }
@@ -22,7 +22,7 @@ export class ToogleButton implements Button {
             return;
         }
 
-        const joined = event.toogleParticipant(request.from);
+        const joined = event.toggleParticipant(request.from);
         this.context.output.responseOnClick(
             request.id, 
             joined ? ResponseMessage.EventJoined : ResponseMessage.EventLeft);
