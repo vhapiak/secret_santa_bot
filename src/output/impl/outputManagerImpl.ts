@@ -8,7 +8,7 @@ import { ErrorMessage, InfoMessage, OutputManager, ResponseMessage } from '../ou
 function errorToMessage(error: ErrorMessage): string {
     switch (error) {
         case ErrorMessage.InternalError:
-            return `Sorry, looks like bot is sick. Please, try again latter`;
+            return `Sorry, looks like bot is sick\\. Please, try again latter`;
         case ErrorMessage.AlreadyHasEvent:
             return `This group already has a Secret Santa event`;
         case ErrorMessage.NoEvent:

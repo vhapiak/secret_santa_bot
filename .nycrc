@@ -7,7 +7,8 @@
   "exclude": [
     "visual-test/",
     "test/",
-    "coverage/"
+    "coverage/",
+    "src/main.ts"
   ],
   "sourceMap": true,
   "reporter": [

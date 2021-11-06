@@ -1,3 +1,9 @@
+/**
+ * It is hard to automate this software unit testing,
+ * so here we just check execution flow for line coverage.
+ * 
+ * See visualTest.ts 
+ */
 
 import { describe, it } from 'mocha';
 import { expect } from 'chai';
@@ -24,97 +30,197 @@ describe('OutputManager', () => {
     const other = sinon.stubInterface<User>();
     const event = sinon.stubInterface<Event>();
 
+    beforeEach(() => {
+        event.getName.returns(name);
+        event.getOwner.returns(ownerId);
+
+        owner.getId.returns(ownerId);
+        owner.getName.returns(ownerName);
+
+        other.getId.returns(otherId);
+        owner.getName.returns(otherName);
+
+        users.getUser.withArgs(ownerId).returns(owner);
+        users.getUser.withArgs(otherId).returns(other);
+    });
+    
     afterEach(() => {
         sinon.default.reset();
     });
 
     it('should send error message', () => {
         const manager = new OutputManagerImpl('', bot, users);
-
-        manager.sendError(chatId, ErrorMessage.AlreadyHasEvent);
-        expect(bot.sendMessage.calledOnce).to.be.true;
-
-        manager.sendError(chatId, ErrorMessage.InternalError);
-        manager.sendError(chatId, ErrorMessage.NoEvent);
-        manager.sendError(chatId, ErrorMessage.PermissionDenied);
-        expect(bot.sendMessage.getCalls().length).to.be.equal(4);
+        const errors = [
+            ErrorMessage.AlreadyHasEvent,
+            ErrorMessage.EventAlreadyLaunched,
+            ErrorMessage.EventIsNotLaunched,
+            ErrorMessage.InternalError,
+            ErrorMessage.NoEvent,
+            ErrorMessage.NotAuthorizedUser,
+            ErrorMessage.NotEnoughUsers,
+            ErrorMessage.NotPrivateChat,
+            ErrorMessage.PermissionDenied,
+        ];
+        errors.forEach(error => {
+            manager.sendError(chatId, error);
+            expect(bot.sendMessage.called).to.be.true;
+            expect(bot.sendMessage.lastCall.args[0]).to.be.equal(chatId);
+            expect(bot.sendMessage.lastCall.args[1].length).to.be.not.equal(0);
+        });
+        expect(bot.sendMessage.getCalls().length).to.be.equal(errors.length);
     });
 
     it('should send info message', () => {
         const manager = new OutputManagerImpl('', bot, users);
-
-        manager.sendInfo(chatId, InfoMessage.Help);
-        expect(bot.sendMessage.calledOnce).to.be.true;
+        const infos = [
+            InfoMessage.EventCanceled,
+            InfoMessage.EventFinished,
+            InfoMessage.EventLaunched,
+            InfoMessage.Help,
+            InfoMessage.WaitingForWishlist,
+            InfoMessage.WishlistReset,
+            InfoMessage.WishlistUpdated,
+        ];
+        infos.forEach(info => {
+            manager.sendInfo(chatId, info);
+            expect(bot.sendMessage.called).to.be.true;
+            expect(bot.sendMessage.lastCall.args[0]).to.be.equal(chatId);
+            expect(bot.sendMessage.lastCall.args[1].length).to.be.not.equal(0);
+        });
+        expect(bot.sendMessage.getCalls().length).to.be.equal(infos.length);
     });
 
-    it('should send event message', () => {
+    it('should send event message with registration', () => {
         const manager = new OutputManagerImpl('', bot, users);
 
-        event.getName.returns(name);
         event.getState.returns(EventState.Registering);
-        event.getOwner.returns(ownerId);
         event.getParticipants.returns([
-            {
-                user: ownerId
-            }, {
-                user: otherId
-            }]);
-
-        owner.getId.returns(ownerId);
-        owner.getName.returns(ownerName);
-
-        other.getId.returns(otherId);
-        owner.getName.returns(otherName);
-
-        users.getUser.withArgs(ownerId).returns(owner);
-        users.getUser.withArgs(otherId).returns(other);
+            { user: ownerId }, 
+            { user: otherId}
+        ]);
 
         manager.sendEvent(chatId, event);
         expect(bot.sendMessage.calledOnce).to.be.true;
+        expect(bot.sendMessage.lastCall.args[0]).to.be.equal(chatId);
+        expect(bot.sendMessage.lastCall.args[1].length).to.be.not.equal(0);
+    });
+
+    it('should send launched event message', () => {
+        const manager = new OutputManagerImpl('', bot, users);
+
+        event.getState.returns(EventState.Launched);
+        event.getParticipants.returns([
+            { user: ownerId }, 
+            { user: otherId}
+        ]);
+
+        manager.sendEvent(chatId, event);
+        expect(bot.sendMessage.calledOnce).to.be.true;
+        expect(bot.sendMessage.lastCall.args[0]).to.be.equal(chatId);
+        expect(bot.sendMessage.lastCall.args[1].length).to.be.not.equal(0);
+    });
+
+    it('should send event message without participants', () => {
+        const manager = new OutputManagerImpl('', bot, users);
+
+        event.getState.returns(EventState.Launched);
+        event.getParticipants.returns([]);
+
+        manager.sendEvent(chatId, event);
+        expect(bot.sendMessage.calledOnce).to.be.true;
+        expect(bot.sendMessage.lastCall.args[0]).to.be.equal(chatId);
+        expect(bot.sendMessage.lastCall.args[1].length).to.be.not.equal(0);
     });
 
     it('should send target message', () => {
         const manager = new OutputManagerImpl('', bot, users);
 
-        event.getName.returns(name);
-        owner.getId.returns(ownerId);
-        owner.getName.returns(ownerName);
-
         manager.sendTarget(chatId, event, owner);
         expect(bot.sendMessage.calledOnce).to.be.true;
+        expect(bot.sendMessage.lastCall.args[0]).to.be.equal(chatId);
+        expect(bot.sendMessage.lastCall.args[1].length).to.be.not.equal(0);
+    });
+
+    it('should send target message with wishlist', () => {
+        const manager = new OutputManagerImpl('', bot, users);
+
+        owner.getWishlist.returns('wishlist');
+
+        manager.sendTarget(chatId, event, owner);
+        expect(owner.getWishlist.called).to.be.true;
+        expect(bot.sendMessage.calledOnce).to.be.true;
+        expect(bot.sendMessage.lastCall.args[0]).to.be.equal(chatId);
+        expect(bot.sendMessage.lastCall.args[1].length).to.be.not.equal(0);
+    });
+
+    it('should send event cancellation', () => {
+        const manager = new OutputManagerImpl('', bot, users);
+
+        manager.sendEventCancellation(chatId, event);
+        expect(bot.sendMessage.calledOnce).to.be.true;
+        expect(bot.sendMessage.lastCall.args[0]).to.be.equal(chatId);
+        expect(bot.sendMessage.lastCall.args[1].length).to.be.not.equal(0);
+    });
+
+    it('should send wishlist update', () => {
+        const manager = new OutputManagerImpl('', bot, users);
+
+        owner.getWishlist.returns('wishlist');
+
+        manager.sendWishlistUpdate(chatId, owner);
+        expect(owner.getWishlist.called).to.be.true;
+        expect(bot.sendMessage.calledOnce).to.be.true;
+        expect(bot.sendMessage.lastCall.args[0]).to.be.equal(chatId);
+        expect(bot.sendMessage.lastCall.args[1].length).to.be.not.equal(0);
+    });
+
+    it('should send wishlist reset', () => {
+        const manager = new OutputManagerImpl('', bot, users);
+
+        owner.getWishlist.returns(undefined);
+
+        manager.sendWishlistUpdate(chatId, owner);
+        expect(owner.getWishlist.called).to.be.true;
+        expect(bot.sendMessage.calledOnce).to.be.true;
+        expect(bot.sendMessage.lastCall.args[0]).to.be.equal(chatId);
+        expect(bot.sendMessage.lastCall.args[1].length).to.be.not.equal(0);
     });
 
     it('should update event message', () => {
         const manager = new OutputManagerImpl('', bot, users);
 
-        event.getName.returns(name);
         event.getState.returns(EventState.Registering);
-        event.getOwner.returns(ownerId);
-        event.getParticipants.returns([
-            {
-                user: ownerId
-            }, {
-                user: otherId
-            }]);
-
-        owner.getId.returns(ownerId);
-        owner.getName.returns(ownerName);
-
-        other.getId.returns(otherId);
-        owner.getName.returns(otherName);
-
-        users.getUser.withArgs(ownerId).returns(owner);
-        users.getUser.withArgs(otherId).returns(other);
+        event.getParticipants.returns([]);
 
         const messageId = 0;
         manager.updateEvent(chatId, messageId, event);
         expect(bot.editMessageText.calledOnce).to.be.true;
     });
 
+    it('should send event message with cancellation', () => {
+        const manager = new OutputManagerImpl('', bot, users);
+
+        const messageId = 0;
+        manager.cancelEvent(chatId, messageId);
+        expect(bot.editMessageText.calledOnce).to.be.true;
+    });
+
     it('should response to query', () => {
         const manager = new OutputManagerImpl('', bot, users);
 
-        manager.responseOnClick('query', ResponseMessage.AlreadyLaunched);
-        expect(bot.answerCallbackQuery.calledOnce).to.be.true;
+        const responses = [
+            ResponseMessage.AlreadyLaunched,
+            ResponseMessage.EventCanceled,
+            ResponseMessage.EventJoined,
+            ResponseMessage.EventLeft,
+            ResponseMessage.InternalError,
+        ];
+        const id = 'query';
+        responses.forEach(response => {
+            manager.responseOnClick(id, response);
+            expect(bot.answerCallbackQuery.called).to.be.true;
+            expect(bot.answerCallbackQuery.lastCall.args[0]).to.be.equal(id);
+        });
+        expect(bot.answerCallbackQuery.getCalls().length).to.be.equal(responses.length);
     });
 });
