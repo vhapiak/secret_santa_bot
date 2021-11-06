@@ -1,7 +1,7 @@
 {
   "name": "secret_santa",
   "version": "1.0.0",
-  "description": "Telegram bot to orginize secret santa events",
+  "description": "Telegram bot to organize secret santa events",
   "scripts": {
     "build": "./node_modules/.bin/tsc",
     "watch": "./node_modules/.bin/tsc --watch",

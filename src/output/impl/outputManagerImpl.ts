@@ -136,7 +136,7 @@ export class OutputManagerImpl implements OutputManager {
         const wishlist = target.getWishlist();
         if (wishlist) {
             builder
-                .newLine(`Wishlist of [${target.getName()}](tg://user?id=${target.getId()}):`)
+                .newLine(`[${target.getName()}](tg://user?id=${target.getId()})'s wishlist:`)
                 .newLine(this.escapeTelegramSymbols(wishlist));
         } else {
             builder.newLine(`Unfortunately, this person doesn't have a wishlist\\!`);
@@ -170,11 +170,11 @@ export class OutputManagerImpl implements OutputManager {
         const wishlist = user.getWishlist();
         if (wishlist) {
             message
-                .append(`has updated their wishlist:`)
+                .append(`has updated wishlist:`)
                 .newLine()
                 .newLine(this.escapeTelegramSymbols(wishlist));
         } else {
-            message.append(`has reset their wishlist`);
+            message.append(`has reset wishlist`);
         }
 
         this.bot.sendMessage(
@@ -248,19 +248,19 @@ export class OutputManagerImpl implements OutputManager {
             builder.newLine(`_Currently there are no participants :\\(_`);
         }
     
-        let hasUnregistredUser = false;
+        let hasUnregisteredUser = false;
         for (let i = 0; i < participants.length; ++i) {
             const user = this.users.getUser(participants[i].user);
             if (user) {
                 builder.newLine(`${i + 1}\\. [${user.getName()}](tg://user?id=${user.getId()})`);
                 if (user.getChatId() === undefined) {
-                    hasUnregistredUser = true;
+                    hasUnregisteredUser = true;
                     builder.append(`\u{1F6AB}`);
                 }
             }
         }
 
-        if (hasUnregistredUser) {
+        if (hasUnregisteredUser) {
             builder
                 .newLine()
                 .newLine(`_Users with \u{1F6AB} should write [message](https://t\\.me/${this.botName})`)
