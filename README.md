@@ -28,7 +28,7 @@ npm run bot <name> <token> <db-path>
 
 Telegram users can register to event using corresponding button in group message.
 
-![Screenshot](doc/eventRegistering.jpeg)
+![Screenshot](doc/eventRegistering.png)
 
 ### Wishlists
 
@@ -38,11 +38,11 @@ Each participant can send a wishlist to bot (in private chat). This list will be
 
 When owner launches event each participant will receive a person (for whom he/she should prepare a present) and a wishlist (if any).
 
-![Screenshot](doc/targetNotification.jpeg)
+![Screenshot](doc/targetNotification.png)
 
 ### Wishlist update notifications
 
 If your target will change a wishlist, you will receive corresponding notification.
 
-![Screenshot](doc/wishlistUpdate.jpeg)
+![Screenshot](doc/wishlistUpdate.png)
 
