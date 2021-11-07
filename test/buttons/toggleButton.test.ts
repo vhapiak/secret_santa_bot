@@ -43,7 +43,7 @@ describe('ToggleButton', () => {
         event.toggleParticipant.returns(true);
         user.getId.returns(userId);
 
-        button.process({
+        button.onClick({
             id: requestId,
             from: user,
             chatId: chatId,
@@ -72,7 +72,7 @@ describe('ToggleButton', () => {
         event.toggleParticipant.returns(false);
         user.getId.returns(userId);
 
-        button.process({
+        button.onClick({
             id: requestId,
             from: user,
             chatId: chatId,
@@ -98,7 +98,7 @@ describe('ToggleButton', () => {
         
         events.getEvent.withArgs(chatId).returns(undefined);
 
-        button.process({
+        button.onClick({
             id: requestId,
             from: user,
             chatId: chatId,
@@ -121,7 +121,7 @@ describe('ToggleButton', () => {
         events.getEvent.withArgs(chatId).returns(event);
         event.getState.returns(EventState.Launched);
 
-        button.process({
+        button.onClick({
             id: requestId,
             from: user,
             chatId: chatId,

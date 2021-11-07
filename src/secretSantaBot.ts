@@ -21,6 +21,10 @@ function generateName(user: TelegramBot.User): string {
     return user.first_name + (user.last_name ? ' ' + user.last_name : '');
 }
 
+/**
+ * Bot implementation that translate user request to 
+ * commands and buttons processing.
+ */
 export class SecretSantaBot {
     constructor(
         private bot: TelegramBot,
@@ -95,7 +99,7 @@ export class SecretSantaBot {
         
         const user = this.getUser(query.from);
 
-        button.process({
+        button.onClick({
             id: query.id,
             from: user,
             chatId: query.message.chat.id,

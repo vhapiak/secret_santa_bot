@@ -3,6 +3,9 @@ import { ErrorMessage, InfoMessage } from '../../output/outputManager';
 import { Command, Message } from '../command';
 import { UpdateWishlistDialog } from './updateWishlistDialog';
 
+/**
+ * Switches command processing mode to wishlist waiting
+ */
 export class WishlistCommand implements Command {
     constructor(private context: Context) {
 

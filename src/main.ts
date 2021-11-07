@@ -7,6 +7,9 @@ import { OutputManagerImpl } from './output/impl/outputManagerImpl';
 import { SecretSantaBot } from './secretSantaBot';
 import { UsersManagerImpl } from './user/impl/usersManagerImpl';
 
+/**
+ * Bot entry point
+ */
 function main(argv: string[]) {
     if (argv.length < 5) {
         console.log('Usage: main.js <telegram-name> <telegram-token> <db-directory>');

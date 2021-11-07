@@ -3,6 +3,10 @@ import { EventState } from '../../event/event';
 import { ErrorMessage, InfoMessage } from '../../output/outputManager';
 import { Command, Message } from '../command';
 
+/**
+ * Finishes launched command, so the new one can be 
+ * created in the same chat
+ */
 export class FinishCommand implements Command {
     constructor(private context: Context) {
 

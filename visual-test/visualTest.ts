@@ -1,3 +1,8 @@
+/**
+ * Manual test to check how bot output looks 
+ * in telegram clients.
+ */
+
 import * as sinon from 'ts-sinon';
 
 import TelegramBot from 'node-telegram-bot-api';
@@ -125,19 +130,22 @@ class StubCommand implements Command {
     }
 }
 
+/**
+ * Replace event message with launched event message
+ */
 class StubButton implements Button {
     constructor(private output: OutputManager) {
 
     }
 
-    process(request: Request): void {
+    onClick(request: Request): void {
         this.output.updateEvent(request.chatId, request.messageId, launchedEvent);
         this.output.responseOnClick(request.id, ResponseMessage.AlreadyLaunched);
     }
 }
 
 /**
- * Method to run bot that process single command
+ * Method to run bot that process single command and button
  */
 function main(argv: string[]) {
     if (argv.length < 4) {

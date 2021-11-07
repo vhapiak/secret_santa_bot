@@ -1,4 +1,6 @@
-
+/**
+ * Helper class to build large strings
+ */
 export class TextBuilder {
     constructor(private data: string) {
 

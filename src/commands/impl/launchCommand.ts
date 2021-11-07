@@ -9,7 +9,14 @@ type Targets = {
     target: User;
 };
 
+/**
+ * Generates random unique pairs.
+ * 
+ * @param users Event participants
+ * @returns Pairs of users. `user` is Secret Santa of `target`
+ */
 export function generateTargets(users: User[]): Targets[] {
+    // shuffling
     for (let i = users.length - 1; i > 0; i--) {
         let j = Math.floor(Math.random() * (i + 1));
         let tmp = users[i];
@@ -17,6 +24,7 @@ export function generateTargets(users: User[]): Targets[] {
         users[j] = tmp;
     }
 
+    // user in the list is a target for previous (list is cycled) user
     const targets: Targets[] = [];
     for (let i = 0; i < users.length; ++i) {
         let next = (i + 1) % users.length;
@@ -29,6 +37,10 @@ export function generateTargets(users: User[]): Targets[] {
     return targets;
 }
 
+/**
+ * Generates target for each user and send them 
+ * to private messages
+ */
 export class LaunchCommand implements Command {
     constructor(private context: Context) {
 
@@ -66,13 +78,12 @@ export class LaunchCommand implements Command {
         const targets = generateTargets(users);
 
         event.setState(EventState.Launched);
-        for (let i = 0; i < targets.length; ++i) {
-            const pair = targets[i];
-            const chatId = pair.user.getChatId() as ChatId;
 
+        targets.forEach(pair => {
+            const chatId = pair.user.getChatId() as ChatId;
             event.setTarget(pair.user.getId(), pair.target.getId());
             this.context.output.sendTarget(chatId, event, pair.target);
-        }
+        });
 
         this.context.output.sendInfo(message.chat.id, InfoMessage.EventLaunched);
 
@@ -80,15 +91,9 @@ export class LaunchCommand implements Command {
     }
 
     private getUsers(participants: Participant[]): User[] {
-        const users: User[] = [];
-        for (let i = 0; i < participants.length; ++i) {
-            const participant = participants[i];
-            const user = this.context.users.getUser(participant.user);
-            if (!user) {
-                throw new Error(`Cannot find user with id ${participant.user}`);
-            }
-            users.push(user);
-        }
+        const users: User[] = participants.map(participant => {
+            return this.context.users.getUser(participant.user) as User;
+        });
         return users;
     }
 

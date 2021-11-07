@@ -2,6 +2,11 @@ import { Context } from '../../context';
 import { ErrorMessage, InfoMessage } from '../../output/outputManager';
 import { Command, Message } from '../command';
 
+/**
+ * Cancels command, so the new one can be 
+ * created in the same chat. Users will receive 
+ * notifications about cancellation.
+ */
 export class CancelCommand implements Command {
     constructor(private context: Context) {
 
@@ -19,14 +24,13 @@ export class CancelCommand implements Command {
             return undefined;
         }
 
-        const participants = event.getParticipants();
-        for (let i = 0; i < participants.length; ++i) {
-            const user = this.context.users.getUser(participants[i].user);
+        event.getParticipants().forEach(participant => {
+            const user = this.context.users.getUser(participant.user);
             const chatId = user?.getChatId();
             if (chatId) {
                 this.context.output.sendEventCancellation(chatId, event);
             }
-        }
+        });
  
         this.context.events.removeEvent(event.getId());
         this.context.output.sendInfo(message.chat.id, InfoMessage.EventCanceled);

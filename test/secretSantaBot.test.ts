@@ -268,8 +268,8 @@ describe('SecretSantaBot', () => {
             }
         });
 
-        expect(button.process.called).to.be.true;
-        expect(button.process.lastCall.args[0]).to.be.deep.equal({
+        expect(button.onClick.called).to.be.true;
+        expect(button.onClick.lastCall.args[0]).to.be.deep.equal({
             id: queryId,
             from: user,
             chatId: chatId,
@@ -304,7 +304,7 @@ describe('SecretSantaBot', () => {
             }
         });
 
-        expect(button.process.called).to.be.false;
+        expect(button.onClick.called).to.be.false;
     });
 
     it('should skip process invalid query', () => {
@@ -326,7 +326,7 @@ describe('SecretSantaBot', () => {
             // no message data
         });
 
-        expect(button.process.called).to.be.false;
+        expect(button.onClick.called).to.be.false;
     });
 
     it('should notify about internal error during query processing', () => {

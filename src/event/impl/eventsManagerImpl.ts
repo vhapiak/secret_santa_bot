@@ -26,14 +26,10 @@ export class EventsManagerImpl implements EventsManager {
     removeEvent(id: ChatId): void {
         const filepath = this.makeFilepath(id);
         const event = EventImpl.readFromFile(filepath);
-        if (event) {
-            event.getParticipants().forEach(participant => {
-                const user = this.users.getUser(participant.user);
-                if (user) {
-                    user.removeActiveEvent(id);
-                }
-            });
-        }
+        event?.getParticipants().forEach(participant => {
+            const user = this.users.getUser(participant.user);
+            user?.removeActiveEvent(id);
+        });
         return fs.rmSync(filepath);
     }
 

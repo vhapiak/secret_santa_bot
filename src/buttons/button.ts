@@ -8,5 +8,10 @@ export type Request = {
 }
 
 export interface Button {
-    process(request: Request): void;
+    /**
+     * Process button click
+     * 
+     * @param request Information about button click
+     */
+    onClick(request: Request): void;
 }

@@ -2,6 +2,9 @@ import { Context } from '../../context';
 import { ErrorMessage } from '../../output/outputManager';
 import { Command, Message } from '../command';
 
+/**
+ * Sends current status of Secret Santa event
+ */
 export class StatusCommand implements Command {
     constructor(private context: Context) {
 

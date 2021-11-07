@@ -3,6 +3,9 @@ import { ErrorMessage, InfoMessage } from '../../output/outputManager';
 import { Command, Message } from '../command';
 import { CommandUtils } from './commandUtils';
 
+/**
+ * Removes user current wishlist
+ */
 export class ResetWishlistCommand implements Command {
     constructor(private context: Context) {
 

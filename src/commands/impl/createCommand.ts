@@ -2,6 +2,10 @@ import { Context } from '../../context';
 import { ErrorMessage } from '../../output/outputManager';
 import { Command, Message } from '../command';
 
+/**
+ * Creates new secret santa event in chat 
+ * from which this command received.
+ */
 export class CreateCommand implements Command {
     constructor(private context: Context) {
 

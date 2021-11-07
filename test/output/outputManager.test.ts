@@ -38,7 +38,7 @@ describe('OutputManager', () => {
         owner.getName.returns(ownerName);
 
         other.getId.returns(otherId);
-        owner.getName.returns(otherName);
+        other.getName.returns(otherName);
 
         users.getUser.withArgs(ownerId).returns(owner);
         users.getUser.withArgs(otherId).returns(other);
@@ -96,7 +96,7 @@ describe('OutputManager', () => {
         event.getState.returns(EventState.Registering);
         event.getParticipants.returns([
             { user: ownerId }, 
-            { user: otherId}
+            { user: otherId }
         ]);
 
         manager.sendEvent(chatId, event);

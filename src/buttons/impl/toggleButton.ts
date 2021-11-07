@@ -3,12 +3,15 @@ import { EventState } from '../../event/event';
 import { ResponseMessage } from '../../output/outputManager';
 import { Button, Request } from '../button';
 
+/**
+ * Toggle user participation in secret santa event
+ */
 export class ToggleButton implements Button {
     constructor(private context: Context) {
 
     }
 
-    process(request: Request): void {
+    onClick(request: Request): void {
         const event = this.context.events.getEvent(request.chatId);
         if (!event) {
             this.context.output.responseOnClick(request.id, ResponseMessage.EventCanceled);
