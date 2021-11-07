@@ -130,13 +130,13 @@ export class OutputManagerImpl implements OutputManager {
     sendTarget(chat: ChatId, event: Event, target: User): void {
         const builder = multiline()
             .append(`Secret santa event in _${event.getName()}_ has launched\\.`)
-            .append(`You should prepare a present for [${target.getName()}](tg://user?id=${target.getId()})`)
+            .append(`You should prepare a present for ${this.userRef(target)}`)
             .newLine();
 
         const wishlist = target.getWishlist();
         if (wishlist) {
             builder
-                .newLine(`[${target.getName()}](tg://user?id=${target.getId()})'s wishlist:`)
+                .newLine(`${this.userRef(target)}'s wishlist:`)
                 .newLine(this.escapeTelegramSymbols(wishlist));
         } else {
             builder.newLine(`Unfortunately, this person doesn't have a wishlist\\!`);
@@ -166,7 +166,7 @@ export class OutputManagerImpl implements OutputManager {
 
     sendWishlistUpdate(chat: ChatId, user: User): void {
         const message = multiline()
-            .append(`[${user.getName()}](tg://user?id=${user.getId()}) `);
+            .append(`${this.userRef(user)} `);
         const wishlist = user.getWishlist();
         if (wishlist) {
             message
@@ -238,7 +238,7 @@ export class OutputManagerImpl implements OutputManager {
         let builder = multiline()
             .append(`*Secret Santa Event*`)
             .newLine()
-            .newLine(`*Owner:* [${owner.getName()}](tg://user?id=${owner.getId()})`)
+            .newLine(`*Owner:* ${this.userRef(owner)}`)
             .newLine(`*Status:* _${status}_`)
             .newLine()
             .newLine(`*Participants:*`);
@@ -252,7 +252,7 @@ export class OutputManagerImpl implements OutputManager {
         for (let i = 0; i < participants.length; ++i) {
             const user = this.users.getUser(participants[i].user);
             if (user) {
-                builder.newLine(`${i + 1}\\. [${user.getName()}](tg://user?id=${user.getId()})`);
+                builder.newLine(`${i + 1}\\. ${this.userRef(user)}`);
                 if (user.getChatId() === undefined) {
                     hasUnregisteredUser = true;
                     builder.append(`\u{1F6AB}`);
@@ -276,6 +276,11 @@ export class OutputManagerImpl implements OutputManager {
             return [];
         }
         return [{text: 'Join/Leave', callback_data: 'toggle'}];
+    }
+
+    private userRef(user: User): string {
+        const name = this.escapeTelegramSymbols(user.getName());
+        return `[${name}](tg://user?id=${user.getId()})`;
     }
 
     private escapeTelegramSymbols(str: string): string {
