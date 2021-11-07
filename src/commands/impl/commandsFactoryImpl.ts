@@ -9,6 +9,7 @@ import { HelpCommand } from './helpCommand';
 import { LaunchCommand } from './launchCommand';
 import { ResetWishlistCommand } from './resetWishlistCommand';
 import { StatusCommand } from './statusCommand';
+import { UpdateBudget } from './updateBudgetCommand';
 import { WishlistCommand } from './wishlistCommand';
 
 export class CommandsFactoryImpl implements CommandsFactory {
@@ -35,6 +36,8 @@ export class CommandsFactoryImpl implements CommandsFactory {
                 return new WishlistCommand(this.context);
             case '/reset_wishlist':
                 return new ResetWishlistCommand(this.context);
+            case '/set_budget':
+                return new UpdateBudget(this.context);
         }
         return new BlankCommand(this.context);
     }
