@@ -37,7 +37,7 @@ function helpMessage(): string {
         .newLine()
         .newLine(`If you are event participant: just relax, I will send you all important information later\\.`)
         .newLine(`You can add your /wishlist and help your Secret Santa with choosing a present\\.`)
-        .newLine(`Use /resetWishlist to reset your wishlist\\.`)
+        .newLine(`Use /reset_wishlist to reset your wishlist\\.`)
         .newLine()
         .newLine(`If you want to organize new event: just add me to the group with participants and type /create there\\.`)
         .append(`When all participants will join the event you can type /launch to assign target for each participant\\.`)
@@ -128,8 +128,9 @@ export class OutputManagerImpl implements OutputManager {
     }
 
     sendTarget(chat: ChatId, event: Event, target: User): void {
+        const name = this.escapeTelegramSymbols(event.getName());
         const builder = multiline()
-            .append(`Secret santa event in _${event.getName()}_ has launched\\.`)
+            .append(`Secret santa event in _${name}_ has launched\\.`)
             .append(`You should prepare a present for ${this.userRef(target)}`)
             .newLine();
 
@@ -151,8 +152,9 @@ export class OutputManagerImpl implements OutputManager {
     }
 
     sendEventCancellation(chat: ChatId, event: Event): void {
+        const name = this.escapeTelegramSymbols(event.getName());
         const message = multiline().
-            append(`Secret Santa event has canceled in group _${event.getName()}_\\.`)
+            append(`Secret Santa event has canceled in group _${name}_\\.`)
             .newLine(`Ignore all previous messages regarding this group`)
             .text();
 
