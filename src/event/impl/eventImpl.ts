@@ -9,6 +9,7 @@ export type EventData = {
     name: string;
     state: EventState;
     participants: Participant[];
+    budget?: string;
 }
 
 export class EventImpl implements Event {
@@ -33,6 +34,10 @@ export class EventImpl implements Event {
 
     getParticipants(): Participant[] {
         return this.data.participants;
+    }
+
+    getBudget(): string | undefined {
+        return this.data.budget;
     }
 
     toggleParticipant(user: User): boolean {
@@ -65,6 +70,11 @@ export class EventImpl implements Event {
             throw new Error(`Cannot find user ${user} in event ${this.data.id}`);
         }
         participant.target = target;
+        return this.save();
+    }
+
+    setBudget(budget: string): void {
+        this.data.budget = budget;
         return this.save();
     }
 

@@ -14,6 +14,7 @@ describe('Event', () => {
     const name = 'chat';
     const ownerId = 6;
     const target = 7;
+    const budget = '100$';
     const dataWithoutParticipants = JSON.stringify({
         id: id,
         owner: ownerId,
@@ -27,6 +28,14 @@ describe('Event', () => {
         name: name,
         state: EventState.Launched,
         participants: []
+    });
+    const dataWithBudget = JSON.stringify({
+        id: id,
+        owner: ownerId,
+        name: name,
+        state: EventState.Registering,
+        participants: [],
+        budget: budget
     });
     const dataWithParticipants = JSON.stringify({
         id: id,
@@ -134,6 +143,20 @@ describe('Event', () => {
         expect(event.getParticipants()[0].target).to.be.equal(target);
     });
 
+    it('should save budget changes to file', () => {
+        const event = new EventImpl(filepath, {
+            id: id,
+            owner: ownerId,
+            name: name,
+            state: EventState.Registering,
+            participants: []
+        });
+        event.setBudget(budget);
+
+        expect(fsStub.writeFileSync.lastCall.args[1]).to.be.equal(dataWithBudget);
+        expect(event.getBudget()).to.be.equal(budget);
+    });
+
     it('should throw in case of wrong target assignment', () => {
         const event = new EventImpl(filepath, {
             id: id,
@@ -159,7 +182,7 @@ describe('Event', () => {
         expect(event?.getParticipants()[0].user).to.be.equal(ownerId);
     });
 
-    it('should not return user if file not exists', () => {
+    it('should not return event if file not exists', () => {
         fsStub.existsSync.withArgs(filepath).returns(false);
         const event = EventImpl.readFromFile(filepath);
         expect(event).to.be.undefined;

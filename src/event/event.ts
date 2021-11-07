@@ -24,6 +24,7 @@ export interface Event {
     getName(): string;
     getState(): EventState;
     getParticipants(): Participant[];
+    getBudget(): string | undefined;
 
     /**
      * @brief Add user to participants or remove him from them if user already in list
@@ -36,4 +37,5 @@ export interface Event {
 
     setState(state: EventState): void;
     setTarget(user: UserId, target: UserId): void;
+    setBudget(budget: string): void;
 }
