@@ -50,7 +50,8 @@ describe('WishlistCommand', () => {
                 title: title,
                 private: true
             },
-            data: 'wishlist'
+            data: 'wishlist',
+            args: []
         });
 
         expect(user.setWishlist.called).to.be.true;
@@ -75,7 +76,8 @@ describe('WishlistCommand', () => {
                 title: title,
                 private: true
             },
-            data: ''
+            data: '',
+            args: []
         });
 
         expect(user.setWishlist.called).to.be.true;

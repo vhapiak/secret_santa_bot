@@ -71,7 +71,8 @@ describe('SecretSantaBot', () => {
                 title: title,
                 private: false
             },
-            data: '/launch'
+            data: '/launch',
+            args: []
         });
     });
 
@@ -105,7 +106,8 @@ describe('SecretSantaBot', () => {
                 title: title,
                 private: true
             },
-            data: ''
+            data: '',
+            args: []
         });
     });
 
@@ -305,7 +307,8 @@ describe('SecretSantaBot', () => {
                 title: title,
                 private: true
             },
-            data: 'wishlist'
+            data: 'wishlist',
+            args: []
         });
     });
 

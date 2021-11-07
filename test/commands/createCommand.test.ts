@@ -47,7 +47,8 @@ describe('CreateCommand', () => {
                 title: title,
                 private: true
             },
-            data: ''
+            data: '',
+            args: []
         });
 
         expect(output.sendEvent.called).to.be.true;
@@ -68,7 +69,8 @@ describe('CreateCommand', () => {
                 title: title,
                 private: true
             },
-            data: ''
+            data: '',
+            args: []
         });
 
         expect(output.sendError.called).to.be.true;

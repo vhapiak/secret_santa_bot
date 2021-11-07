@@ -78,7 +78,8 @@ describe('LaunchCommand', () => {
                 title: title,
                 private: true
             },
-            data: ''
+            data: '',
+            args: []
         });
 
         expect(output.sendTarget.calledThrice).to.be.true;
@@ -116,7 +117,8 @@ describe('LaunchCommand', () => {
                 title: title,
                 private: true
             },
-            data: ''
+            data: '',
+            args: []
         });
 
         expect(output.sendError.called).to.be.true;
@@ -140,7 +142,8 @@ describe('LaunchCommand', () => {
                 title: title,
                 private: true
             },
-            data: ''
+            data: '',
+            args: []
         });
 
         expect(output.sendError.called).to.be.true;
@@ -163,7 +166,8 @@ describe('LaunchCommand', () => {
                 title: title,
                 private: true
             },
-            data: ''
+            data: '',
+            args: []
         });
 
         expect(output.sendError.called).to.be.true;
@@ -188,7 +192,8 @@ describe('LaunchCommand', () => {
                 title: title,
                 private: true
             },
-            data: ''
+            data: '',
+            args: []
         });
 
         expect(output.sendError.called).to.be.true;
@@ -224,7 +229,8 @@ describe('LaunchCommand', () => {
                 title: title,
                 private: true
             },
-            data: ''
+            data: '',
+            args: []
         });
 
         expect(output.sendError.called).to.be.true;

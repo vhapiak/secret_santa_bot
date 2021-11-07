@@ -40,7 +40,8 @@ describe('WishlistCommand', () => {
                 title: title,
                 private: true
             },
-            data: ''
+            data: '',
+            args: []
         });
 
         expect(nextCommand).to.be.not.undefined;
@@ -60,7 +61,8 @@ describe('WishlistCommand', () => {
                 title: title,
                 private: false
             },
-            data: ''
+            data: '',
+            args: []
         });
 
         expect(nextCommand).to.be.undefined;

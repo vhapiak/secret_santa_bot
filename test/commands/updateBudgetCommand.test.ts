@@ -49,7 +49,8 @@ describe('UpdateBudgetCommand', () => {
                 title: title,
                 private: true
             },
-            data: budget
+            data: budget,
+            args: []
         });
 
         expect(event.setBudget.called).to.be.true;
@@ -80,7 +81,8 @@ describe('UpdateBudgetCommand', () => {
                 title: title,
                 private: true
             },
-            data: ''
+            data: '',
+            args: []
         });
 
         expect(event.setBudget.called).to.be.false;
@@ -103,7 +105,8 @@ describe('UpdateBudgetCommand', () => {
                 title: title,
                 private: true
             },
-            data: ''
+            data: '',
+            args: []
         });
 
         expect(event.setBudget.called).to.be.false;

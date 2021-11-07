@@ -1,30 +1,10 @@
 import TelegramBot from "node-telegram-bot-api";
 import { ButtonsFactory } from "./buttons/buttonsFactory";
+import { CommandInfo, CommandParser } from "./commandParser";
 import { Command } from "./commands/command";
 import { CommandsFactory } from "./commands/commandsFactory";
 import { ChatId, User } from "./user/user";
 import { UsersManager } from "./user/usersManager";
-
-function commandDetector(botName: string, msg: TelegramBot.Message): string | undefined {
-    if (!msg.entities || !msg.text) {
-        return undefined;
-    }
-    for (let entity of msg.entities) {
-        if (entity.type == 'bot_command') {
-            const fullCommand = msg.text.substr(entity.offset, entity.length);
-            const index = fullCommand.indexOf('@');
-            if (index === -1) {
-                return fullCommand;
-            } else {
-                const mentionedBot = fullCommand.substr(index + 1, fullCommand.length);
-                if (mentionedBot === botName) {
-                    return fullCommand.substr(0, index);
-                }
-            }
-        }
-    }
-    return undefined;
-}
 
 function generateName(user: TelegramBot.User): string {
     return user.first_name + (user.last_name ? ' ' + user.last_name : '');
@@ -71,7 +51,8 @@ export class SecretSantaBot {
             return;
         }
 
-        const command = this.getActiveCommand(msg);
+        const commandInfo = CommandParser.parseCommand(this.botName, msg);
+        const command = this.getActiveCommand(msg.chat.id, commandInfo);
 
         const user = this.getUser(msg.from);
         if (msg.chat.type == 'private') {
@@ -82,10 +63,11 @@ export class SecretSantaBot {
             from: user,
             chat: {
                 id: msg.chat.id,
-                title: msg.chat.title ? msg.chat.title : '<unknow>',
+                title: msg.chat.title ? msg.chat.title : '<unknown>',
                 private: msg.chat.type === 'private'
             },
-            data: msg.text ? msg.text : ''
+            data: msg.text ? msg.text : '',
+            args: commandInfo.args
         });
 
         if (nextCommand) {
@@ -125,13 +107,12 @@ export class SecretSantaBot {
         return user;
     }
 
-    private getActiveCommand(msg: TelegramBot.Message): Command {
-        let command = this.activeDialogs.get(msg.chat.id);
+    private getActiveCommand(chatId: ChatId, commandInfo: CommandInfo): Command {
+        let command = this.activeDialogs.get(chatId);
         if (command) {
             return command;
         }
-        const commandName = commandDetector(this.botName, msg);
-        return this.commandsFactory.createCommand(commandName);
+        return this.commandsFactory.createCommand(commandInfo.name);
     }
 
     private activeDialogs = new Map<ChatId, Command>();

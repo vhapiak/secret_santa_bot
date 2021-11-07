@@ -38,7 +38,8 @@ describe('HelpCommand', () => {
                 title: title,
                 private: true
             },
-            data: ''
+            data: '',
+            args: []
         });
 
         expect(output.sendInfo.called).to.be.true;

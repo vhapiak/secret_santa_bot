@@ -64,7 +64,8 @@ describe('CancelCommand', () => {
                 title: title,
                 private: true
             },
-            data: ''
+            data: '',
+            args: []
         });
 
         expect(events.removeEvent.called).to.be.true;
@@ -92,7 +93,8 @@ describe('CancelCommand', () => {
                 title: title,
                 private: true
             },
-            data: ''
+            data: '',
+            args: []
         });
 
         expect(output.sendError.called).to.be.true;
@@ -115,7 +117,8 @@ describe('CancelCommand', () => {
                 title: title,
                 private: true
             },
-            data: ''
+            data: '',
+            args: []
         });
 
         expect(output.sendError.called).to.be.true;

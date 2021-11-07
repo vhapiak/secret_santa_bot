@@ -9,7 +9,8 @@ export type Chat = {
 export type Message = {
     from: User;
     chat: Chat;
-    data: string;
+    data: string; // raw message data
+    args: string[]; // command arguments 
 }
 
 export interface Command {

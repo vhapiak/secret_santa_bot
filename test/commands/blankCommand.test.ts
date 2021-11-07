@@ -39,7 +39,8 @@ describe('HelpCommand', () => {
                 title: title,
                 private: true
             },
-            data: ''
+            data: '',
+            args: []
         });
 
         expect(output.cancelEvent.called).to.be.false;

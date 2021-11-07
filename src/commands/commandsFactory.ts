@@ -8,7 +8,7 @@ export interface CommandsFactory {
      * 
      * @param name Command name
      * 
-     * @returns Default command implementation in case of invalid name
+     * @returns Blank command implementation in case of invalid name
      */
     createCommand(name: string | undefined): Command;
 }

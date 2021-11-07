@@ -49,7 +49,8 @@ describe('FinishCommand', () => {
                 title: title,
                 private: true
             },
-            data: ''
+            data: '',
+            args: []
         });
 
         expect(events.removeEvent.called).to.be.true;
@@ -73,7 +74,8 @@ describe('FinishCommand', () => {
                 title: title,
                 private: true
             },
-            data: ''
+            data: '',
+            args: []
         });
 
         expect(output.sendError.called).to.be.true;
@@ -97,7 +99,8 @@ describe('FinishCommand', () => {
                 title: title,
                 private: true
             },
-            data: ''
+            data: '',
+            args: []
         });
 
         expect(output.sendError.called).to.be.true;
@@ -121,7 +124,8 @@ describe('FinishCommand', () => {
                 title: title,
                 private: true
             },
-            data: ''
+            data: '',
+            args: []
         });
 
         expect(output.sendError.called).to.be.true;
