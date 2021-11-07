@@ -249,7 +249,7 @@ export class OutputManagerImpl implements OutputManager {
         const budget = event.getBudget();
         if (budget) {
             const escapedBudget = this.escapeTelegramSymbols(budget);
-            builder.newLine(`*Gift budget: _${escapedBudget}_`);
+            builder.newLine(`*Gift budget:* _${escapedBudget}_`);
         }
 
         builder
