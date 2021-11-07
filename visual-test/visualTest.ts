@@ -127,6 +127,12 @@ class StubCommand implements Command {
 
         this.output.sendWishlistUpdate(message.chat.id, thirdUser);
         await delay(100);
+
+        this.output.sendWishlist(message.chat.id, firstUser);
+        await delay(100);
+
+        this.output.sendWishlist(message.chat.id, thirdUser);
+        await delay(100);
     }
 }
 

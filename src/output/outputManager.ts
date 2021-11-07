@@ -41,6 +41,7 @@ export interface OutputManager {
     sendTarget(chat: ChatId, event: Event, target: User): void;
     sendEventCancellation(chat: ChatId, event: Event): void;
     sendWishlistUpdate(chat: ChatId, user: User): void;
+    sendWishlist(chat: ChatId, user: User): void;
 
     /**
      * @brief Updates existing telegram message with new event state

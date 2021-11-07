@@ -5,6 +5,7 @@ import { BlankCommand } from './blankCommand';
 import { CancelCommand } from './cancelCommand';
 import { CreateCommand } from './createCommand';
 import { FinishCommand } from './finishCommand';
+import { GetWishlistCommand } from './getWishlistCommand';
 import { HelpCommand } from './helpCommand';
 import { LaunchCommand } from './launchCommand';
 import { ResetWishlistCommand } from './resetWishlistCommand';
@@ -36,6 +37,8 @@ export class CommandsFactoryImpl implements CommandsFactory {
                 return new WishlistCommand(this.context);
             case '/reset_wishlist':
                 return new ResetWishlistCommand(this.context);
+            case '/get_wishlist':
+                return new GetWishlistCommand(this.context);
             case '/set_budget':
                 return new UpdateBudget(this.context);
         }

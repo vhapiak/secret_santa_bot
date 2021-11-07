@@ -48,7 +48,7 @@ function helpMessage(): string {
         .newLine(`/status \\- to see latest state of event\\.`)
         .newLine(`/cancel \\- to cancel event \\(participants will be notified about cancellation\\)\\.`)
         .newLine(`/finish \\- to end past event and have possibility to create new one\\.`)
-        .newLine(`/set_budget \\<budget string\\> \\- to update event gift budget\\.`)
+        .newLine(`/set\\_budget \\<budget string\\> \\- to update event gift budget\\.`)
         .text()
 }
 
@@ -182,6 +182,26 @@ export class OutputManagerImpl implements OutputManager {
                 .newLine(this.escapeTelegramSymbols(wishlist));
         } else {
             message.append(`wishlist has been reset`);
+        }
+
+        this.bot.sendMessage(
+            chat,
+            message.text(),
+            {
+                parse_mode: 'MarkdownV2'
+            });
+    }
+
+    sendWishlist(chat: ChatId, user: User): void {
+        const wishlist = user.getWishlist();
+        const message = multiline();
+        if (wishlist) {
+            message
+                .append(`Your wishlist:`)
+                .newLine()
+                .newLine(this.escapeTelegramSymbols(wishlist));
+        } else {
+            message.append(`You don't have a wishlist`);
         }
 
         this.bot.sendMessage(

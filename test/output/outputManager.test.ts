@@ -201,6 +201,30 @@ describe('OutputManager', () => {
         expect(bot.sendMessage.lastCall.args[1].length).to.be.not.equal(0);
     });
 
+    it('should send existing wishlist', () => {
+        const manager = new OutputManagerImpl('', bot, users);
+
+        owner.getWishlist.returns('wishlist');
+
+        manager.sendWishlist(chatId, owner);
+        expect(owner.getWishlist.called).to.be.true;
+        expect(bot.sendMessage.calledOnce).to.be.true;
+        expect(bot.sendMessage.lastCall.args[0]).to.be.equal(chatId);
+        expect(bot.sendMessage.lastCall.args[1].length).to.be.not.equal(0);
+    });
+
+    it('should send message about wishlist absence', () => {
+        const manager = new OutputManagerImpl('', bot, users);
+
+        owner.getWishlist.returns(undefined);
+
+        manager.sendWishlist(chatId, owner);
+        expect(owner.getWishlist.called).to.be.true;
+        expect(bot.sendMessage.calledOnce).to.be.true;
+        expect(bot.sendMessage.lastCall.args[0]).to.be.equal(chatId);
+        expect(bot.sendMessage.lastCall.args[1].length).to.be.not.equal(0);
+    });
+
     it('should update event message', () => {
         const manager = new OutputManagerImpl('', bot, users);
 
