@@ -37,7 +37,7 @@ function helpMessage(): string {
         .newLine()
         .newLine(`If you are event participant: just relax, I will send you all important information later\\.`)
         .newLine(`You can add your /wishlist and help your Secret Santa with choosing a present\\.`)
-        .newLine(`Use /reset_wishlist to reset your wishlist\\.`)
+        .newLine(`Use /reset\\_wishlist to reset your wishlist\\.`)
         .newLine()
         .newLine(`If you want to organize new event: just add me to the group with participants and type /create there\\.`)
         .append(`When all participants will join the event you can type /launch to assign target for each participant\\.`)
