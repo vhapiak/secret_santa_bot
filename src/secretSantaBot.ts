@@ -5,13 +5,22 @@ import { CommandsFactory } from "./commands/commandsFactory";
 import { ChatId, User } from "./user/user";
 import { UsersManager } from "./user/usersManager";
 
-function commandDetector(msg: TelegramBot.Message): string | undefined {
-    if (!msg.entities) {
+function commandDetector(botName: string, msg: TelegramBot.Message): string | undefined {
+    if (!msg.entities || !msg.text) {
         return undefined;
     }
     for (let entity of msg.entities) {
         if (entity.type == 'bot_command') {
-            return msg.text?.substr(entity.offset, entity.length);
+            const fullCommand = msg.text.substr(entity.offset, entity.length);
+            const index = fullCommand.indexOf('@');
+            if (index === -1) {
+                return fullCommand;
+            } else {
+                const mentionedBot = fullCommand.substr(index + 1, fullCommand.length);
+                if (mentionedBot === botName) {
+                    return fullCommand.substr(0, index);
+                }
+            }
         }
     }
     return undefined;
@@ -28,6 +37,7 @@ function generateName(user: TelegramBot.User): string {
 export class SecretSantaBot {
     constructor(
         private bot: TelegramBot,
+        private botName: string,
         private users: UsersManager,
         private commandsFactory: CommandsFactory,
         private buttonsFactory: ButtonsFactory
@@ -120,7 +130,7 @@ export class SecretSantaBot {
         if (command) {
             return command;
         }
-        const commandName = commandDetector(msg);
+        const commandName = commandDetector(this.botName, msg);
         return this.commandsFactory.createCommand(commandName);
     }
 

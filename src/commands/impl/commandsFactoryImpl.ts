@@ -1,6 +1,7 @@
 import { Context } from '../../context';
 import { Command } from '../command';
 import { CommandsFactory } from '../commandsFactory';
+import { BlankCommand } from './blankCommand';
 import { CancelCommand } from './cancelCommand';
 import { CreateCommand } from './createCommand';
 import { FinishCommand } from './finishCommand';
@@ -35,6 +36,6 @@ export class CommandsFactoryImpl implements CommandsFactory {
             case '/reset_wishlist':
                 return new ResetWishlistCommand(this.context);
         }
-        return new HelpCommand(this.context);
+        return new BlankCommand(this.context);
     }
 }

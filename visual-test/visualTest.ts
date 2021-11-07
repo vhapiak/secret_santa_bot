@@ -153,8 +153,11 @@ function main(argv: string[]) {
         return;
     }
     
-    const telegram = new TelegramBot(argv[3]);
-    const output = new OutputManagerImpl(argv[2], telegram, users);
+    const botName = argv[2];
+    const botToken = argv[3];
+
+    const telegram = new TelegramBot(botToken);
+    const output = new OutputManagerImpl(botName, telegram, users);
 
     const commandsFactory = sinon.stubInterface<CommandsFactory>();
     const buttonsFactory = sinon.stubInterface<ButtonsFactory>();
@@ -165,6 +168,7 @@ function main(argv: string[]) {
 
     const secretSantaBot = new SecretSantaBot(
         telegram,
+        botName,
         users,
         commandsFactory,
         buttonsFactory

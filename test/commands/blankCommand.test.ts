@@ -5,11 +5,10 @@ import * as sinon from 'ts-sinon';
 
 import { UsersManager } from '../../src/user/usersManager';
 import { EventsManager } from '../../src/event/eventsManager';
-import { InfoMessage, OutputManager } from '../../src/output/outputManager';
+import { OutputManager } from '../../src/output/outputManager';
 import { User } from '../../src/user/user';
 import { CommandsFactoryImpl } from '../../src/commands/impl/commandsFactoryImpl';
 import { Context } from '../../src/context';
-import { Command } from '../../src/commands/command';
 
 describe('HelpCommand', () => {
     const chatId = 42;
@@ -30,7 +29,9 @@ describe('HelpCommand', () => {
         sinon.default.reset();
     });
 
-    function performTest(command: Command): void {
+    it('should do nothing', () => {
+        const factory = new CommandsFactoryImpl(context);
+        const command = factory.createCommand(undefined);
         command.process({
             from: user,
             chat: {
@@ -41,20 +42,14 @@ describe('HelpCommand', () => {
             data: ''
         });
 
-        expect(output.sendInfo.called).to.be.true;
-        expect(output.sendInfo.lastCall.args[0]).to.be.equal(chatId);
-        expect(output.sendInfo.lastCall.args[1]).to.be.equal(InfoMessage.Help);
-    }
-
-    it('should send help message on /start', () => {
-        const factory = new CommandsFactoryImpl(context);
-        const command = factory.createCommand('/start');
-        performTest(command);
-    });
-
-    it('should send help message on /help', () => {
-        const factory = new CommandsFactoryImpl(context);
-        const command = factory.createCommand('/help');
-        performTest(command);
+        expect(output.cancelEvent.called).to.be.false;
+        expect(output.responseOnClick.called).to.be.false;
+        expect(output.sendError.called).to.be.false;
+        expect(output.sendEvent.called).to.be.false;
+        expect(output.sendEventCancellation.called).to.be.false;
+        expect(output.sendInfo.called).to.be.false;
+        expect(output.sendTarget.called).to.be.false;
+        expect(output.sendWishlistUpdate.called).to.be.false;
+        expect(output.updateEvent.called).to.be.false;
     });
 });

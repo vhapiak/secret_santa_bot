@@ -12,7 +12,7 @@ import { Button } from '../src/buttons/button';
 import { SecretSantaBot } from '../src/secretSantaBot';
 
 describe('SecretSantaBot', () => {
-    const any = sinon.default.match.any;
+    const botName = 'TestBot';
     const queryId = 'query';
     const messageId = 1;
     const chatId = 42;
@@ -34,7 +34,7 @@ describe('SecretSantaBot', () => {
     });
 
     it('should process command', () => {
-        const bot = new SecretSantaBot(telegram, users, commands, buttons);
+        const bot = new SecretSantaBot(telegram, botName, users, commands, buttons);
 
         users.getUser.withArgs(userId).returns(user);
         commands.createCommand.withArgs('/launch').returns(command);
@@ -76,7 +76,7 @@ describe('SecretSantaBot', () => {
     });
 
     it('should process default command', () => {
-        const bot = new SecretSantaBot(telegram, users, commands, buttons);
+        const bot = new SecretSantaBot(telegram, botName, users, commands, buttons);
 
         users.getUser.withArgs(userId).returns(user);
         commands.createCommand.withArgs(undefined).returns(command);
@@ -109,8 +109,76 @@ describe('SecretSantaBot', () => {
         });
     });
 
+    // in groups command may look like /command@BotName
+    it('should process command assigned to bot', () => {
+        const bot = new SecretSantaBot(telegram, botName, users, commands, buttons);
+
+        users.getUser.withArgs(userId).returns(user);
+        commands.createCommand.withArgs('/launch').returns(command);
+        
+        bot.processTextMessage({
+            message_id: messageId,
+            chat: {
+                id: chatId,
+                type: 'group',
+                title: title
+            },
+            date: 0,
+            from: {
+                id: userId,
+                first_name: firstName,
+                last_name: lastName,
+                is_bot: false
+            },
+            text: '/launch@TestBot',
+            entities: [
+                {
+                    offset: 0,
+                    length: 15,
+                    type: 'bot_command'
+                }
+            ]
+        });
+
+        expect(command.process.called).to.be.true;
+    });
+
+    // in groups command may look like /command@NotOurBot
+    it('should skip processing of another bot command', () => {
+        const bot = new SecretSantaBot(telegram, botName, users, commands, buttons);
+
+        users.getUser.withArgs(userId).returns(user);
+        commands.createCommand.withArgs(undefined).returns(command);
+        
+        bot.processTextMessage({
+            message_id: messageId,
+            chat: {
+                id: chatId,
+                type: 'group',
+                title: title
+            },
+            date: 0,
+            from: {
+                id: userId,
+                first_name: firstName,
+                last_name: lastName,
+                is_bot: false
+            },
+            text: '/launch@AnotherBot',
+            entities: [
+                {
+                    offset: 0,
+                    length: 18,
+                    type: 'bot_command'
+                }
+            ]
+        });
+
+        expect(command.process.called).to.be.true;
+    });
+
     it('should register user and bind chat', () => {
-        const bot = new SecretSantaBot(telegram, users, commands, buttons);
+        const bot = new SecretSantaBot(telegram, botName, users, commands, buttons);
 
         users.getUser.withArgs(userId).returns(undefined);
         users.addUser.withArgs(userId, `${firstName} ${lastName}`).returns(user);
@@ -137,7 +205,7 @@ describe('SecretSantaBot', () => {
     });
 
     it('should skip process invalid message', () => {
-        const bot = new SecretSantaBot(telegram, users, commands, buttons);
+        const bot = new SecretSantaBot(telegram, botName, users, commands, buttons);
         
         bot.processTextMessage({
             message_id: messageId,
@@ -153,7 +221,7 @@ describe('SecretSantaBot', () => {
     });
 
     it('should notify about internal error during message processing', () => {
-        const bot = new SecretSantaBot(telegram, users, commands, buttons);
+        const bot = new SecretSantaBot(telegram, botName, users, commands, buttons);
         
         users.getUser.throws('some error');
 
@@ -178,11 +246,11 @@ describe('SecretSantaBot', () => {
     });
 
     it('should process chained commands', () => {
-        const bot = new SecretSantaBot(telegram, users, commands, buttons);
+        const bot = new SecretSantaBot(telegram, botName, users, commands, buttons);
 
         const nextCommand = sinon.stubInterface<Command>();
         users.getUser.withArgs(userId).returns(user);
-        commands.createCommand.withArgs('/whishlist').returns(command);
+        commands.createCommand.withArgs('/wishlist').returns(command);
         command.process.returns(nextCommand);
         
         bot.processTextMessage({
@@ -199,7 +267,7 @@ describe('SecretSantaBot', () => {
                 last_name: lastName,
                 is_bot: false
             },
-            text: '/whishlist',
+            text: '/wishlist',
             entities: [
                 {
                     offset: 0,
@@ -226,7 +294,7 @@ describe('SecretSantaBot', () => {
                 last_name: lastName,
                 is_bot: false
             },
-            text: 'whishlist'
+            text: 'wishlist'
         });
 
         expect(nextCommand.process.called).to.be.true;
@@ -237,12 +305,12 @@ describe('SecretSantaBot', () => {
                 title: title,
                 private: true
             },
-            data: 'whishlist'
+            data: 'wishlist'
         });
     });
 
     it('should process button', () => {
-        const bot = new SecretSantaBot(telegram, users, commands, buttons);
+        const bot = new SecretSantaBot(telegram, botName, users, commands, buttons);
 
         users.getUser.withArgs(userId).returns(user);
         buttons.createButton.withArgs('toogle').returns(button);
@@ -277,8 +345,8 @@ describe('SecretSantaBot', () => {
         });
     });
 
-    it('should skip process unknown button', () => {
-        const bot = new SecretSantaBot(telegram, users, commands, buttons);
+    it('should skip processing of unknown button', () => {
+        const bot = new SecretSantaBot(telegram, botName, users, commands, buttons);
 
         users.getUser.withArgs(userId).returns(user);
         buttons.createButton.returns(undefined);
@@ -307,8 +375,8 @@ describe('SecretSantaBot', () => {
         expect(button.onClick.called).to.be.false;
     });
 
-    it('should skip process invalid query', () => {
-        const bot = new SecretSantaBot(telegram, users, commands, buttons);
+    it('should skip processing of invalid query', () => {
+        const bot = new SecretSantaBot(telegram, botName, users, commands, buttons);
 
         users.getUser.withArgs(userId).returns(user);
         buttons.createButton.returns(undefined);
@@ -330,7 +398,7 @@ describe('SecretSantaBot', () => {
     });
 
     it('should notify about internal error during query processing', () => {
-        const bot = new SecretSantaBot(telegram, users, commands, buttons);
+        const bot = new SecretSantaBot(telegram, botName, users, commands, buttons);
 
         users.getUser.throws('some error');
         buttons.createButton.returns(button);

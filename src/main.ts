@@ -15,11 +15,15 @@ function main(argv: string[]) {
         console.log('Usage: main.js <telegram-name> <telegram-token> <db-directory>');
         return;
     }
+
+    const botName = argv[2];
+    const botToken = argv[3];
+    const dbPath = argv[4];
     
-    const telegram = new TelegramBot(argv[3]);
-    const users = new UsersManagerImpl(argv[4]);
-    const events = new EventsManagerImpl(argv[4], users);
-    const output = new OutputManagerImpl(argv[2], telegram, users);
+    const telegram = new TelegramBot(botToken);
+    const users = new UsersManagerImpl(dbPath);
+    const events = new EventsManagerImpl(dbPath, users);
+    const output = new OutputManagerImpl(botName, telegram, users);
     const context: Context = {
         users: users,
         events: events,
@@ -31,6 +35,7 @@ function main(argv: string[]) {
     
     const secretSantaBot = new SecretSantaBot(
         telegram,
+        botName,
         users,
         commandsFactory,
         buttonsFactory
