@@ -50,7 +50,7 @@ export class CommandParser {
         if (trimmed.length === 0) {
             return [];
         }
-        const splitted = trimmed.split(/\s.+/);
+        const splitted = trimmed.split(/\s+/g);
         return splitted.map(arg => arg.trim());
     }
 }
