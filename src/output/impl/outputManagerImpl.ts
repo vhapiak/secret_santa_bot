@@ -54,17 +54,17 @@ function infoToMessage(info: InfoMessage): string {
         case InfoMessage.Help:
             return helpMessage();
         case InfoMessage.EventFinished:
-            return `Event has finished, I hope it was fun\\! Now you can /create new event in this chat\\!`;
+            return `Event has been finished, I hope it was fun\\! Now you can /create new event in this chat\\!`;
         case InfoMessage.EventCanceled:
-            return `Event has canceled\\! Now you can /create new event in this chat\\!`;
+            return `Event has been canceled\\! Now you can /create new event in this chat\\!`;
         case InfoMessage.EventLaunched:
-            return `Event has launched\\! Check private messages to see your target\\!`;
+            return `Event has been launched\\! Check private messages to see your target\\!`;
         case InfoMessage.WaitingForWishlist:
             return `Please send a *text* message with your wishlist\\!`;
         case InfoMessage.WishlistUpdated:
-            return `Your wishlist has updated\\! It will be visible for your secret santa\\!`;
+            return `Your wishlist has been updated\\! It will be visible for your secret santa\\!`;
         case InfoMessage.WishlistReset:
-            return `Your wishlist has deleted\\!`;
+            return `Your wishlist has been deleted\\!`;
     }
 }
 
@@ -73,11 +73,11 @@ function responseToMessage(response: ResponseMessage): string {
         case ResponseMessage.InternalError:
             return `Internal error, cannot process your request`;
         case ResponseMessage.AlreadyLaunched:
-            return `Sorry, event already launched. You cannot join/leave it`;
+            return `Sorry, event is already launched. You cannot join/leave it`;
         case ResponseMessage.EventJoined:
-            return `Your have joined event`;
+            return `Your have been joined event`;
         case ResponseMessage.EventLeft:
-            return `Your have left event`;
+            return `Your have been left event`;
         case ResponseMessage.EventCanceled:
             return `This event was canceled`;
     }
@@ -130,7 +130,7 @@ export class OutputManagerImpl implements OutputManager {
     sendTarget(chat: ChatId, event: Event, target: User): void {
         const name = this.escapeTelegramSymbols(event.getName());
         const builder = multiline()
-            .append(`Secret santa event in _${name}_ has launched\\.`)
+            .append(`Secret santa event in _${name}_ has been launched\\.`)
             .append(`You should prepare a present for ${this.userRef(target)}`)
             .newLine();
 
@@ -154,7 +154,7 @@ export class OutputManagerImpl implements OutputManager {
     sendEventCancellation(chat: ChatId, event: Event): void {
         const name = this.escapeTelegramSymbols(event.getName());
         const message = multiline().
-            append(`Secret Santa event has canceled in group _${name}_\\.`)
+            append(`Secret Santa event has been canceled in group _${name}_\\.`)
             .newLine(`Ignore all previous messages regarding this group`)
             .text();
 
@@ -168,15 +168,15 @@ export class OutputManagerImpl implements OutputManager {
 
     sendWishlistUpdate(chat: ChatId, user: User): void {
         const message = multiline()
-            .append(`${this.userRef(user)} `);
+            .append(`${this.userRef(user)}'s '`);
         const wishlist = user.getWishlist();
         if (wishlist) {
             message
-                .append(`has updated wishlist:`)
+                .append(`wishlist has been updated:`)
                 .newLine()
                 .newLine(this.escapeTelegramSymbols(wishlist));
         } else {
-            message.append(`has reset wishlist`);
+            message.append(`wishlist has been reset`);
         }
 
         this.bot.sendMessage(
