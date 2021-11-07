@@ -11,7 +11,7 @@ import { CommandsFactoryImpl } from '../../src/commands/impl/commandsFactoryImpl
 import { Context } from '../../src/context';
 import { CommandUtils } from '../../src/commands/impl/commandUtils';
 
-describe('ResetWishlistCommand', () => {
+describe('Reset_wishlistCommand', () => {
     const chatId = 42;
     const title = 'Some group';
 
@@ -42,7 +42,7 @@ describe('ResetWishlistCommand', () => {
 
     it('should reset wishlist', () => {
         const factory = new CommandsFactoryImpl(context);
-        const command = factory.createCommand('/resetWishlist');
+        const command = factory.createCommand('/reset_wishlist');
         
         command.process({
             from: user,
@@ -67,7 +67,7 @@ describe('ResetWishlistCommand', () => {
 
     it('should check that chat is private', () => {
         const factory = new CommandsFactoryImpl(context);
-        const command = factory.createCommand('/resetWishlist');
+        const command = factory.createCommand('/reset_wishlist');
 
         command.process({
             from: user,

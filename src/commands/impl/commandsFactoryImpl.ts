@@ -32,7 +32,7 @@ export class CommandsFactoryImpl implements CommandsFactory {
                 return new LaunchCommand(this.context);
             case '/wishlist':
                 return new WishlistCommand(this.context);
-            case '/resetWishlist':
+            case '/reset_wishlist':
                 return new ResetWishlistCommand(this.context);
         }
         return new HelpCommand(this.context);
