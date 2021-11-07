@@ -60,6 +60,7 @@ describe('OutputManager', () => {
             ErrorMessage.NotEnoughUsers,
             ErrorMessage.NotPrivateChat,
             ErrorMessage.PermissionDenied,
+            ErrorMessage.ArgumentExpected,
         ];
         errors.forEach(error => {
             manager.sendError(chatId, error);

@@ -11,6 +11,7 @@ export enum ErrorMessage {
     NotEnoughUsers,
     NotAuthorizedUser,
     NotPrivateChat,
+    ArgumentExpected,
 }
 
 export enum InfoMessage {

@@ -28,6 +28,8 @@ function errorToMessage(error: ErrorMessage): string {
                 .text();
         case ErrorMessage.NotPrivateChat:
             return `This command available only in private chats with me`;
+        case ErrorMessage.ArgumentExpected:
+            return `This command require an argument, see /help`;
     }
 }
 
@@ -46,7 +48,7 @@ function helpMessage(): string {
         .newLine(`/status \\- to see latest state of event\\.`)
         .newLine(`/cancel \\- to cancel event \\(participants will be notified about cancellation\\)\\.`)
         .newLine(`/finish \\- to end past event and have possibility to create new one\\.`)
-        .newLine(`/set_budget \\- to update event gift budget\\.`)
+        .newLine(`/set_budget <budget string> \\- to update event gift budget\\.`)
         .text()
 }
 

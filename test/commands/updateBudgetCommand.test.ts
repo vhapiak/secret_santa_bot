@@ -15,6 +15,7 @@ describe('UpdateBudgetCommand', () => {
     const chatId = 42;
     const userId = 13;
     const title = 'Some group';
+    const budget = '100$';
     
     const user = sinon.stubInterface<User>();
     const event = sinon.stubInterface<Event>();
@@ -35,7 +36,6 @@ describe('UpdateBudgetCommand', () => {
     it('should update budget', () => {
         const factory = new CommandsFactoryImpl(context);
         const command = factory.createCommand('/set_budget');
-        const budget = '100$';
         
         events.getEvent.withArgs(chatId).returns(event);
         event.getId.returns(chatId);
@@ -49,8 +49,8 @@ describe('UpdateBudgetCommand', () => {
                 title: title,
                 private: true
             },
-            data: budget,
-            args: []
+            data: '',
+            args: [budget]
         });
 
         expect(event.setBudget.called).to.be.true;
@@ -82,7 +82,7 @@ describe('UpdateBudgetCommand', () => {
                 private: true
             },
             data: '',
-            args: []
+            args: [budget]
         });
 
         expect(event.setBudget.called).to.be.false;
@@ -92,11 +92,33 @@ describe('UpdateBudgetCommand', () => {
         expect(output.sendError.lastCall.args[1]).to.be.equal(ErrorMessage.PermissionDenied);
     });
 
-    it('should check that command called by event owner', () => {
+    it('should check that event exists', () => {
         const factory = new CommandsFactoryImpl(context);
         const command = factory.createCommand('/set_budget');
         
         events.getEvent.withArgs(chatId).returns(undefined);
+
+        command.process({
+            from: user,
+            chat: {
+                id: chatId,
+                title: title,
+                private: true
+            },
+            data: '',
+            args: [budget]
+        });
+
+        expect(event.setBudget.called).to.be.false;
+
+        expect(output.sendError.called).to.be.true;
+        expect(output.sendError.lastCall.args[0]).to.be.equal(chatId);
+        expect(output.sendError.lastCall.args[1]).to.be.equal(ErrorMessage.NoEvent);
+    });
+
+    it('should check number of arguments', () => {
+        const factory = new CommandsFactoryImpl(context);
+        const command = factory.createCommand('/set_budget');
 
         command.process({
             from: user,
@@ -113,6 +135,6 @@ describe('UpdateBudgetCommand', () => {
 
         expect(output.sendError.called).to.be.true;
         expect(output.sendError.lastCall.args[0]).to.be.equal(chatId);
-        expect(output.sendError.lastCall.args[1]).to.be.equal(ErrorMessage.NoEvent);
+        expect(output.sendError.lastCall.args[1]).to.be.equal(ErrorMessage.ArgumentExpected);
     });
 });

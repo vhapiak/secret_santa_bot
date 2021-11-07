@@ -12,6 +12,11 @@ export class UpdateBudget implements Command {
     }
 
     process(message: Message): Command | undefined {
+        if (message.args.length === 0) {
+            this.context.output.sendError(message.chat.id, ErrorMessage.ArgumentExpected);
+            return undefined;
+        }
+
         const event = this.context.events.getEvent(message.chat.id);
         if (!event) {
             this.context.output.sendError(message.chat.id, ErrorMessage.NoEvent);
@@ -23,7 +28,7 @@ export class UpdateBudget implements Command {
             return undefined;
         }
 
-        event.setBudget(message.data);
+        event.setBudget(message.args.join(' '));
         this.context.output.sendInfo(message.chat.id, InfoMessage.BudgetUpdated);
         this.context.output.sendEvent(message.chat.id, event);
 
