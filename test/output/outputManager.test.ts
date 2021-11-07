@@ -80,6 +80,7 @@ describe('OutputManager', () => {
             InfoMessage.WaitingForWishlist,
             InfoMessage.WishlistReset,
             InfoMessage.WishlistUpdated,
+            InfoMessage.BudgetUpdated,
         ];
         infos.forEach(info => {
             manager.sendInfo(chatId, info);
@@ -125,6 +126,19 @@ describe('OutputManager', () => {
 
         event.getState.returns(EventState.Launched);
         event.getParticipants.returns([]);
+
+        manager.sendEvent(chatId, event);
+        expect(bot.sendMessage.calledOnce).to.be.true;
+        expect(bot.sendMessage.lastCall.args[0]).to.be.equal(chatId);
+        expect(bot.sendMessage.lastCall.args[1].length).to.be.not.equal(0);
+    });
+
+    it('should send event message with budget', () => {
+        const manager = new OutputManagerImpl('', bot, users);
+
+        event.getState.returns(EventState.Launched);
+        event.getParticipants.returns([]);
+        event.getBudget.returns('100$');
 
         manager.sendEvent(chatId, event);
         expect(bot.sendMessage.calledOnce).to.be.true;

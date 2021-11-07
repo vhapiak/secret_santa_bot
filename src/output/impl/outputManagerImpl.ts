@@ -46,6 +46,7 @@ function helpMessage(): string {
         .newLine(`/status \\- to see latest state of event\\.`)
         .newLine(`/cancel \\- to cancel event \\(participants will be notified about cancellation\\)\\.`)
         .newLine(`/finish \\- to end past event and have possibility to create new one\\.`)
+        .newLine(`/set_budget \\- to update event gift budget\\.`)
         .text()
 }
 
@@ -65,6 +66,8 @@ function infoToMessage(info: InfoMessage): string {
             return `Your wishlist has been updated\\! It will be visible for your secret santa\\!`;
         case InfoMessage.WishlistReset:
             return `Your wishlist has been deleted\\!`;
+        case InfoMessage.BudgetUpdated:
+            return `Gift budget has been updated\\!`;
     }
 }
 
@@ -241,7 +244,15 @@ export class OutputManagerImpl implements OutputManager {
             .append(`*Secret Santa Event*`)
             .newLine()
             .newLine(`*Owner:* ${this.userRef(owner)}`)
-            .newLine(`*Status:* _${status}_`)
+            .newLine(`*Status:* _${status}_`);
+        
+        const budget = event.getBudget();
+        if (budget) {
+            const escapedBudget = this.escapeTelegramSymbols(budget);
+            builder.newLine(`*Gift budget: _${escapedBudget}_`);
+        }
+
+        builder
             .newLine()
             .newLine(`*Participants:*`);
     

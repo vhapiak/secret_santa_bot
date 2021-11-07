@@ -21,6 +21,7 @@ export enum InfoMessage {
     WaitingForWishlist,
     WishlistUpdated,
     WishlistReset,
+    BudgetUpdated,
 }
 
 export enum ResponseMessage {
