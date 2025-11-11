@@ -3,6 +3,7 @@ import { EventState, Participant } from '../../event/event';
 import { ErrorMessage, InfoMessage } from '../../output/outputManager';
 import { ChatId, User } from '../../user/user';
 import { Command, Message } from '../command';
+import { CommandUtils } from './commandUtils';
 
 type Targets = {
     user: User;
@@ -46,14 +47,15 @@ export class LaunchCommand implements Command {
 
     }
 
-    process(message: Message): Promise<Command | undefined> {
+    async process(message: Message): Promise<Command | undefined> {
         const event = this.context.events.getEvent(message.chat.id);
         if (!event) {
             this.context.output.sendError(message.chat.id, ErrorMessage.NoEvent);
             return Promise.resolve(undefined);
         }
 
-        if (event.getOwner() !== message.from.getId()) {
+        const canManageEvent = await CommandUtils.canManageEvent(message.from, event, this.context.service);
+        if (!canManageEvent) {
             this.context.output.sendError(message.chat.id, ErrorMessage.PermissionDenied);
             return Promise.resolve(undefined);
         }

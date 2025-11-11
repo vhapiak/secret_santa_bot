@@ -9,7 +9,9 @@ import { ErrorMessage, InfoMessage, OutputManager } from '../../src/output/outpu
 import { User } from '../../src/user/user';
 import { CommandsFactoryImpl } from '../../src/commands/impl/commandsFactoryImpl';
 import { Context } from '../../src/context';
-import { Event, EventState } from '../../src/event/event';
+import { Event } from '../../src/event/event';
+import { CommandUtils } from '../../src/commands/impl/commandUtils';
+import { Service } from '../../src/service/service';
 
 describe('CancelCommand', () => {
     const chatId = 42;
@@ -39,8 +41,19 @@ describe('CancelCommand', () => {
         output: output
     };
 
+    const canManageEventStub = sinon.default.stub<[User, Event, Service], Promise<boolean>>();
+
+    before(() => {
+        sinon.default.replace(CommandUtils, 'canManageEvent', canManageEventStub);
+    });
+
     afterEach(() => {
+        canManageEventStub.reset();
         sinon.default.reset();
+    });
+
+    after(() => {
+        sinon.default.restore();
     });
 
     it('should remove event', async () => {
@@ -58,6 +71,7 @@ describe('CancelCommand', () => {
         user.getChatId.returns(userId);
         other.getChatId.returns(undefined);
 
+        canManageEventStub.withArgs(user, event, context.service).resolves(true);
         await command.process({
             from: user,
             chat: {
@@ -87,6 +101,7 @@ describe('CancelCommand', () => {
         
         events.getEvent.withArgs(chatId).returns(undefined);
 
+        canManageEventStub.withArgs(user, event, context.service).resolves(true);
         await command.process({
             from: user,
             chat: {
@@ -103,7 +118,7 @@ describe('CancelCommand', () => {
         expect(output.sendError.lastCall.args[1]).to.be.equal(ErrorMessage.NoEvent);
     });
 
-    it('should check that command called by event owner', async () => {
+    it('should check that command called by event owner or admin', async () => {
         const factory = new CommandsFactoryImpl(context);
         const command = factory.createCommand('/cancel');
         
@@ -111,6 +126,7 @@ describe('CancelCommand', () => {
         event.getOwner.returns(userId + 1);
         user.getId.returns(userId);
 
+        canManageEventStub.withArgs(user, event, context.service).resolves(false);
         await command.process({
             from: user,
             chat: {

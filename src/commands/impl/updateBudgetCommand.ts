@@ -11,7 +11,7 @@ export class UpdateBudget implements Command {
 
     }
 
-    process(message: Message): Promise<Command | undefined> {
+    async process(message: Message): Promise<Command | undefined> {
         if (message.args.length === 0) {
             this.context.output.sendError(message.chat.id, ErrorMessage.ArgumentExpected);
             return Promise.resolve(undefined);
@@ -23,7 +23,8 @@ export class UpdateBudget implements Command {
             return Promise.resolve(undefined);
         }
 
-        if (event.getOwner() !== message.from.getId()) {
+        const canManageEvent = await CommandUtils.canManageEvent(message.from, event, this.context.service);
+        if (!canManageEvent) {
             this.context.output.sendError(message.chat.id, ErrorMessage.PermissionDenied);
             return Promise.resolve(undefined);
         }

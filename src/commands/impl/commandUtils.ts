@@ -1,5 +1,7 @@
 import { Context } from "../../context";
-import { User } from "../../user/user";
+import { Event } from "../../event/event";
+import { Service } from "../../service/service";
+import { User, UserId } from "../../user/user";
 
 export class CommandUtils {
     /**
@@ -22,5 +24,12 @@ export class CommandUtils {
                 }
             });
         });
+    }
+
+    static async canManageEvent(user: User, event: Event, service: Service): Promise<boolean> {
+        if (event.getOwner() !== user.getId()) {
+            return await service.isAdmin(user.getId(), event.getId());
+        }
+        return true;
     }
 }

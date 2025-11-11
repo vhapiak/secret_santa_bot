@@ -10,6 +10,8 @@ import { User } from '../../src/user/user';
 import { CommandsFactoryImpl } from '../../src/commands/impl/commandsFactoryImpl';
 import { Context } from '../../src/context';
 import { Event } from '../../src/event/event';
+import { Service } from '../../src/service/service';
+import { CommandUtils } from '../../src/commands/impl/commandUtils';
 
 describe('UpdateBudgetCommand', () => {
     const chatId = 42;
@@ -30,8 +32,19 @@ describe('UpdateBudgetCommand', () => {
         output: output
     };
 
+    const canManageEventStub = sinon.default.stub<[User, Event, Service], Promise<boolean>>();
+
+    before(() => {
+        sinon.default.replace(CommandUtils, 'canManageEvent', canManageEventStub);
+    });
+
     afterEach(() => {
+        canManageEventStub.reset();
         sinon.default.reset();
+    });
+
+    after(() => {
+        sinon.default.restore();
     });
 
     it('should update budget', async () => {
@@ -43,6 +56,7 @@ describe('UpdateBudgetCommand', () => {
         event.getOwner.returns(userId);
         user.getId.returns(userId);
 
+        canManageEventStub.withArgs(user, event, context.service).resolves(true);
         await command.process({
             from: user,
             chat: {
@@ -66,7 +80,7 @@ describe('UpdateBudgetCommand', () => {
         expect(output.sendInfo.lastCall.args[1]).to.be.equal(InfoMessage.BudgetUpdated);
     });
 
-    it('should check that command called by event owner', async () => {
+    it('should check that command called by event owner or admin', async () => {
         const factory = new CommandsFactoryImpl(context);
         const command = factory.createCommand('/set_budget');
         
@@ -75,6 +89,7 @@ describe('UpdateBudgetCommand', () => {
         event.getOwner.returns(1);
         user.getId.returns(userId);
 
+        canManageEventStub.withArgs(user, event, context.service).resolves(false);
         await command.process({
             from: user,
             chat: {
@@ -99,6 +114,7 @@ describe('UpdateBudgetCommand', () => {
         
         events.getEvent.withArgs(chatId).returns(undefined);
 
+        canManageEventStub.withArgs(user, event, context.service).resolves(true);
         await command.process({
             from: user,
             chat: {
@@ -121,6 +137,7 @@ describe('UpdateBudgetCommand', () => {
         const factory = new CommandsFactoryImpl(context);
         const command = factory.createCommand('/set_budget');
 
+        canManageEventStub.withArgs(user, event, context.service).resolves(true);
         await command.process({
             from: user,
             chat: {

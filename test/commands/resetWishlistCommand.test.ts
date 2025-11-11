@@ -34,6 +34,7 @@ describe('Reset_wishlistCommand', () => {
     });
 
     afterEach(() => {
+        sendWishlistUpdateStub.reset();
         sinon.default.reset();
     });
 

@@ -10,6 +10,8 @@ import { User } from '../../src/user/user';
 import { CommandsFactoryImpl } from '../../src/commands/impl/commandsFactoryImpl';
 import { Context } from '../../src/context';
 import { Event, EventState } from '../../src/event/event';
+import { Service } from '../../src/service/service';
+import { CommandUtils } from '../../src/commands/impl/commandUtils';
 
 describe('FinishCommand', () => {
     const chatId = 42;
@@ -28,9 +30,20 @@ describe('FinishCommand', () => {
         events: events,
         output: output
     };
+    
+    const canManageEventStub = sinon.default.stub<[User, Event, Service], Promise<boolean>>();
+
+    before(() => {
+        sinon.default.replace(CommandUtils, 'canManageEvent', canManageEventStub);
+    });
 
     afterEach(() => {
+        canManageEventStub.reset();
         sinon.default.reset();
+    });
+
+    after(() => {
+        sinon.default.restore();
     });
 
     it('should remove event', async () => {
@@ -43,6 +56,7 @@ describe('FinishCommand', () => {
         event.getOwner.returns(userId);
         user.getId.returns(userId);
 
+        canManageEventStub.withArgs(user, event, context.service).resolves(true);
         await command.process({
             from: user,
             chat: {
@@ -68,6 +82,7 @@ describe('FinishCommand', () => {
         
         events.getEvent.withArgs(chatId).returns(undefined);
 
+        canManageEventStub.withArgs(user, event, context.service).resolves(true);
         await command.process({
             from: user,
             chat: {
@@ -93,6 +108,7 @@ describe('FinishCommand', () => {
         event.getOwner.returns(userId);
         user.getId.returns(userId);
 
+        canManageEventStub.withArgs(user, event, context.service).resolves(true);
         await command.process({
             from: user,
             chat: {
@@ -109,7 +125,7 @@ describe('FinishCommand', () => {
         expect(output.sendError.lastCall.args[1]).to.be.equal(ErrorMessage.EventIsNotLaunched);
     });
 
-    it('should check that command called by event owner', async () => {
+    it('should check that command called by event owner or admin', async () => {
         const factory = new CommandsFactoryImpl(context);
         const command = factory.createCommand('/finish');
         
@@ -118,6 +134,7 @@ describe('FinishCommand', () => {
         event.getOwner.returns(userId + 1);
         user.getId.returns(userId);
 
+        canManageEventStub.withArgs(user, event, context.service).resolves(false);
         await command.process({
             from: user,
             chat: {

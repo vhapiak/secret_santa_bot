@@ -10,6 +10,7 @@ import { User } from '../../src/user/user';
 import { Context } from '../../src/context';
 import { CommandUtils } from '../../src/commands/impl/commandUtils';
 import { Event } from '../../src/event/event';
+import { Service } from '../../src/service/service';
 
 describe('CommandUtils', () => {
     const targetUserId = 12;
@@ -51,6 +52,7 @@ describe('CommandUtils', () => {
         }
     ];
 
+    const service = sinon.stubInterface<Service>();
     const target = sinon.stubInterface<User>();
     const firstSanta = sinon.stubInterface<User>();
     const secondSanta = sinon.stubInterface<User>();
@@ -61,7 +63,7 @@ describe('CommandUtils', () => {
     const output = sinon.stubInterface<OutputManager>();
 
     const context: Context = {
-        service: sinon.stubInterface<any>(),
+        service: service,
         users: users,
         events: events,
         output: output
@@ -75,13 +77,17 @@ describe('CommandUtils', () => {
         events.getEvent.withArgs(firstEventId).returns(firstEvent);
         events.getEvent.withArgs(secondEventId).returns(secondEvent);
 
+        firstEvent.getId.returns(firstEventId);
         firstEvent.getParticipants.returns(firstEventParticipants);
         secondEvent.getParticipants.returns(secondEventParticipants);
 
         users.getUser.withArgs(firstSantaId).returns(firstSanta);
         users.getUser.withArgs(secondSantaId).returns(secondSanta);
 
+        firstSanta.getId.returns(firstSantaId);
         firstSanta.getChatId.returns(firstSantaId);
+
+        secondSanta.getId.returns(secondSantaId);
         secondSanta.getChatId.returns(secondSantaId);
     });
 
@@ -129,5 +135,29 @@ describe('CommandUtils', () => {
         expect(output.sendWishlistUpdate.calledOnce).to.be.true;
         expect(output.sendWishlistUpdate.firstCall.args[0]).to.be.equal(firstSantaId);
         expect(output.sendWishlistUpdate.firstCall.args[1]).to.be.equal(target);
+    });
+
+    it('should check that owner can manage event', async () => {
+        firstEvent.getOwner.returns(firstSantaId);
+        const canManage = await CommandUtils.canManageEvent(firstSanta, firstEvent, service);
+
+        expect(canManage).to.be.true;
+        expect(service.isAdmin.notCalled).to.be.true;
+    });
+
+    it('should check that chat admin can manage event', async () => {
+        firstEvent.getOwner.returns(secondSantaId);
+        service.isAdmin.withArgs(firstSantaId, firstEventId).resolves(true);
+        const canManage = await CommandUtils.canManageEvent(firstSanta, firstEvent, service);
+
+        expect(canManage).to.be.true;
+    });
+
+    it('should check that regular member cannot manage event', async () => {
+        firstEvent.getOwner.returns(secondSantaId);
+        service.isAdmin.withArgs(firstSantaId, firstEventId).resolves(false);
+        const canManage = await CommandUtils.canManageEvent(firstSanta, firstEvent, service);
+
+        expect(canManage).to.be.false;
     });
 });
