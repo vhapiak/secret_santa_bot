@@ -11,10 +11,10 @@ export class CreateCommand implements Command {
 
     }
 
-    process(message: Message): Command | undefined {
+    process(message: Message): Promise<Command | undefined> {
         if (this.context.events.getEvent(message.chat.id)) {
             this.context.output.sendError(message.chat.id, ErrorMessage.AlreadyHasEvent);
-            return undefined;
+            return Promise.resolve(undefined);
         }
 
         const event = this.context.events.addEvent(
@@ -24,6 +24,6 @@ export class CreateCommand implements Command {
 
         this.context.output.sendEvent(message.chat.id, event);
 
-        return undefined;
+        return Promise.resolve(undefined);
     }
 }

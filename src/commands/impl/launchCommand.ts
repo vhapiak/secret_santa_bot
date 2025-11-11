@@ -46,33 +46,33 @@ export class LaunchCommand implements Command {
 
     }
 
-    process(message: Message): Command | undefined {
+    process(message: Message): Promise<Command | undefined> {
         const event = this.context.events.getEvent(message.chat.id);
         if (!event) {
             this.context.output.sendError(message.chat.id, ErrorMessage.NoEvent);
-            return undefined;
+            return Promise.resolve(undefined);
         }
 
         if (event.getOwner() !== message.from.getId()) {
             this.context.output.sendError(message.chat.id, ErrorMessage.PermissionDenied);
-            return undefined;
+            return Promise.resolve(undefined);
         }
 
         if (event.getState() === EventState.Launched) {
             this.context.output.sendError(message.chat.id, ErrorMessage.EventAlreadyLaunched);
-            return undefined;
+            return Promise.resolve(undefined);
         }
 
         if (event.getParticipants().length < 2) {
             this.context.output.sendError(message.chat.id, ErrorMessage.NotEnoughUsers);
-            return undefined;
+            return Promise.resolve(undefined);
         }
 
         const users = this.getUsers(event.getParticipants());
         if (!this.isAllUsersHaveChat(users)) {
             this.context.output.sendEvent(message.chat.id, event);
             this.context.output.sendError(message.chat.id, ErrorMessage.NotAuthorizedUser);
-            return undefined;
+            return Promise.resolve(undefined);
         }
  
         const targets = generateTargets(users);
@@ -87,7 +87,7 @@ export class LaunchCommand implements Command {
 
         this.context.output.sendInfo(message.chat.id, InfoMessage.EventLaunched);
 
-        return undefined;
+        return Promise.resolve(undefined);
     }
 
     private getUsers(participants: Participant[]): User[] {

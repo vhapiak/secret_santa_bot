@@ -20,6 +20,7 @@ describe('WishlistCommand', () => {
     const output = sinon.stubInterface<OutputManager>();
 
     const context: Context = {
+        service: sinon.stubInterface<any>(),
         users: users,
         events: events,
         output: output
@@ -29,11 +30,11 @@ describe('WishlistCommand', () => {
         sinon.default.reset();
     });
 
-    it('should send current user wishlist', () => {
+    it('should send current user wishlist', async () => {
         const factory = new CommandsFactoryImpl(context);
         const command = factory.createCommand('/get_wishlist');
         
-        command.process({
+        await command.process({
             from: user,
             chat: {
                 id: chatId,
@@ -49,11 +50,11 @@ describe('WishlistCommand', () => {
         expect(output.sendWishlist.lastCall.args[1]).to.be.equal(user);
     });
 
-    it('should check that chat is private', () => {
+    it('should check that chat is private', async () => {
         const factory = new CommandsFactoryImpl(context);
         const command = factory.createCommand('/get_wishlist');
 
-        const nextCommand = command.process({
+        const nextCommand = await command.process({
             from: user,
             chat: {
                 id: chatId,

@@ -23,6 +23,7 @@ describe('CreateCommand', () => {
     const output = sinon.stubInterface<OutputManager>();
 
     const context: Context = {
+        service: sinon.stubInterface<any>(),
         users: users,
         events: events,
         output: output
@@ -32,7 +33,7 @@ describe('CreateCommand', () => {
         sinon.default.reset();
     });
 
-    it('should create new event and send it', () => {
+    it('should create new event and send it', async () => {
         const factory = new CommandsFactoryImpl(context);
         const command = factory.createCommand('/create');
         
@@ -40,7 +41,7 @@ describe('CreateCommand', () => {
         events.addEvent.withArgs(chatId, title, userId).returns(event);
         user.getId.returns(userId);
 
-        command.process({
+        await command.process({
             from: user,
             chat: {
                 id: chatId,
@@ -56,13 +57,13 @@ describe('CreateCommand', () => {
         expect(output.sendEvent.lastCall.args[1]).to.be.equal(event);
     });
 
-    it('should check that event already present in chat', () => {
+    it('should check that event already present in chat', async () => {
         const factory = new CommandsFactoryImpl(context);
         const command = factory.createCommand('/create');
         
         events.getEvent.withArgs(chatId).returns(event);
 
-        command.process({
+        await command.process({
             from: user,
             chat: {
                 id: chatId,

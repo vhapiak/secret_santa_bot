@@ -24,6 +24,7 @@ describe('UpdateBudgetCommand', () => {
     const output = sinon.stubInterface<OutputManager>();
 
     const context: Context = {
+        service: sinon.stubInterface<any>(),
         users: users,
         events: events,
         output: output
@@ -33,7 +34,7 @@ describe('UpdateBudgetCommand', () => {
         sinon.default.reset();
     });
 
-    it('should update budget', () => {
+    it('should update budget', async () => {
         const factory = new CommandsFactoryImpl(context);
         const command = factory.createCommand('/set_budget');
         
@@ -42,7 +43,7 @@ describe('UpdateBudgetCommand', () => {
         event.getOwner.returns(userId);
         user.getId.returns(userId);
 
-        command.process({
+        await command.process({
             from: user,
             chat: {
                 id: chatId,
@@ -65,7 +66,7 @@ describe('UpdateBudgetCommand', () => {
         expect(output.sendInfo.lastCall.args[1]).to.be.equal(InfoMessage.BudgetUpdated);
     });
 
-    it('should check that command called by event owner', () => {
+    it('should check that command called by event owner', async () => {
         const factory = new CommandsFactoryImpl(context);
         const command = factory.createCommand('/set_budget');
         
@@ -74,7 +75,7 @@ describe('UpdateBudgetCommand', () => {
         event.getOwner.returns(1);
         user.getId.returns(userId);
 
-        command.process({
+        await command.process({
             from: user,
             chat: {
                 id: chatId,
@@ -92,13 +93,13 @@ describe('UpdateBudgetCommand', () => {
         expect(output.sendError.lastCall.args[1]).to.be.equal(ErrorMessage.PermissionDenied);
     });
 
-    it('should check that event exists', () => {
+    it('should check that event exists', async () => {
         const factory = new CommandsFactoryImpl(context);
         const command = factory.createCommand('/set_budget');
         
         events.getEvent.withArgs(chatId).returns(undefined);
 
-        command.process({
+        await command.process({
             from: user,
             chat: {
                 id: chatId,
@@ -116,11 +117,11 @@ describe('UpdateBudgetCommand', () => {
         expect(output.sendError.lastCall.args[1]).to.be.equal(ErrorMessage.NoEvent);
     });
 
-    it('should check number of arguments', () => {
+    it('should check number of arguments', async () => {
         const factory = new CommandsFactoryImpl(context);
         const command = factory.createCommand('/set_budget');
 
-        command.process({
+        await command.process({
             from: user,
             chat: {
                 id: chatId,

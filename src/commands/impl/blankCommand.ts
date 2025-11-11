@@ -9,7 +9,7 @@ export class BlankCommand implements Command {
 
     }
 
-    process(message: Message): Command | undefined {
-        return undefined;
+    process(message: Message): Promise<Command | undefined> {
+        return Promise.resolve(undefined);
     }
 }

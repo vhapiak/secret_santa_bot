@@ -4,7 +4,8 @@ import { CommandInfo, CommandParser } from "./commandParser";
 import { Command } from "./commands/command";
 import { CommandsFactory } from "./commands/commandsFactory";
 import { ChatId, User } from "./user/user";
-import { UsersManager } from "./user/usersManager";
+import { ErrorMessage, ResponseMessage } from "./output/outputManager";
+import { Context } from "./context";
 
 function generateName(user: TelegramBot.User): string {
     return user.first_name + (user.last_name ? ' ' + user.last_name : '');
@@ -16,20 +17,18 @@ function generateName(user: TelegramBot.User): string {
  */
 export class SecretSantaBot {
     constructor(
-        private bot: TelegramBot,
-        private botName: string,
-        private users: UsersManager,
+        private context: Context,
         private commandsFactory: CommandsFactory,
         private buttonsFactory: ButtonsFactory
     ) {
 
     }
 
-    processTextMessage(msg: TelegramBot.Message): void {
+    async processTextMessage(msg: TelegramBot.Message) {
         try {
-            this.processTextMessageImpl(msg);
+            await this.processTextMessageImpl(msg);
         } catch (error) {
-            this.bot.sendMessage(msg.chat.id, 'Sorry, looks like bot is sick, please, try latter\\!');
+            this.context.output.sendError(msg.chat.id, ErrorMessage.InternalError);
         }
     }
 
@@ -37,21 +36,16 @@ export class SecretSantaBot {
         try {
             this.processCallbackQueryImpl(query);
         } catch (error) {
-            this.bot.answerCallbackQuery(
-                query.id,
-                {
-                    text: 'Sorry, looks like bot is sick, please, try latter\\!'
-                }
-            );
+            this.context.output.responseOnClick(query.id, ResponseMessage.InternalError);
         }
     }
 
-    private processTextMessageImpl(msg: TelegramBot.Message): void {
+    private async processTextMessageImpl(msg: TelegramBot.Message) {
         if (!msg.from) {
             return;
         }
 
-        const commandInfo = CommandParser.parseCommand(this.botName, msg);
+        const commandInfo = CommandParser.parseCommand(this.context.service.getBotName(), msg);
         const command = this.getActiveCommand(msg.chat.id, commandInfo);
 
         const user = this.getUser(msg.from);
@@ -59,7 +53,7 @@ export class SecretSantaBot {
             user.bindChat(msg.chat.id);
         }
 
-        const nextCommand = command.process({
+        const nextCommand = await command.process({
             from: user,
             chat: {
                 id: msg.chat.id,
@@ -100,9 +94,9 @@ export class SecretSantaBot {
     }
 
     private getUser(from: TelegramBot.User): User {
-        let user = this.users.getUser(from.id);
+        let user = this.context.users.getUser(from.id);
         if (!user) {
-            user = this.users.addUser(from.id, generateName(from));
+            user = this.context.users.addUser(from.id, generateName(from));
         }
         return user;
     }

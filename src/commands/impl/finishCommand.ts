@@ -12,26 +12,26 @@ export class FinishCommand implements Command {
 
     }
 
-    process(message: Message): Command | undefined {
+    process(message: Message): Promise<Command | undefined> {
         const event = this.context.events.getEvent(message.chat.id);
         if (!event) {
             this.context.output.sendError(message.chat.id, ErrorMessage.NoEvent);
-            return undefined;
+            return Promise.resolve(undefined);
         }
 
         if (event.getOwner() !== message.from.getId()) {
             this.context.output.sendError(message.chat.id, ErrorMessage.PermissionDenied);
-            return undefined;
+            return Promise.resolve(undefined);
         }
 
         if (event.getState() !== EventState.Launched) {
             this.context.output.sendError(message.chat.id, ErrorMessage.EventIsNotLaunched);
-            return undefined;
+            return Promise.resolve(undefined);
         }
  
         this.context.events.removeEvent(event.getId());
         this.context.output.sendInfo(message.chat.id, InfoMessage.EventFinished);
 
-        return undefined;
+        return Promise.resolve(undefined);
     }
 }

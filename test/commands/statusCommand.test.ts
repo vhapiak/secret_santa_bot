@@ -22,6 +22,7 @@ describe('StatusCommand', () => {
     const output = sinon.stubInterface<OutputManager>();
 
     const context: Context = {
+        service: sinon.stubInterface<any>(),
         users: users,
         events: events,
         output: output
@@ -31,13 +32,13 @@ describe('StatusCommand', () => {
         sinon.default.reset();
     });
 
-    it('should send event message', () => {
+    it('should send event message', async () => {
         const factory = new CommandsFactoryImpl(context);
         const command = factory.createCommand('/status');
         
         events.getEvent.withArgs(chatId).returns(event);
 
-        command.process({
+        await command.process({
             from: user,
             chat: {
                 id: chatId,
@@ -53,13 +54,13 @@ describe('StatusCommand', () => {
         expect(output.sendEvent.lastCall.args[1]).to.be.equal(event);
     });
 
-    it('should check that event exists', () => {
+    it('should check that event exists', async () => {
         const factory = new CommandsFactoryImpl(context);
         const command = factory.createCommand('/status');
         
         events.getEvent.withArgs(chatId).returns(undefined);
 
-        command.process({
+        await command.process({
             from: user,
             chat: {
                 id: chatId,

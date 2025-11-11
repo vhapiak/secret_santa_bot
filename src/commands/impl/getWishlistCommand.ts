@@ -10,12 +10,12 @@ export class GetWishlistCommand implements Command {
 
     }
 
-    process(message: Message): Command | undefined {
+    process(message: Message): Promise<Command | undefined> {
         if (!message.chat.private) {
             this.context.output.sendError(message.chat.id, ErrorMessage.NotPrivateChat);
-            return undefined;
+            return Promise.resolve(undefined);
         }
         this.context.output.sendWishlist(message.chat.id, message.from);
-        return undefined;
+        return Promise.resolve(undefined);
     }
 }

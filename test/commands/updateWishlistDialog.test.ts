@@ -23,6 +23,7 @@ describe('WishlistCommand', () => {
     const sendWishlistUpdateStub = sinon.default.stub<[User, Context], void>();
 
     const context: Context = {
+        service: sinon.stubInterface<any>(),
         users: users,
         events: events,
         output: output
@@ -40,10 +41,10 @@ describe('WishlistCommand', () => {
         sinon.default.restore();
     });
 
-    it('should save wishlist', () => {
+    it('should save wishlist', async () => {
         const command = new UpdateWishlistDialog(context);
         
-        const nextCommand = command.process({
+        const nextCommand = await command.process({
             from: user,
             chat: {
                 id: chatId,
@@ -66,10 +67,10 @@ describe('WishlistCommand', () => {
         expect(sendWishlistUpdateStub.lastCall.args[0]).to.be.equal(user);
     });
 
-    it('should check empty message data', () => {
+    it('should check empty message data', async () => {
         const command = new UpdateWishlistDialog(context);
         
-        const nextCommand = command.process({
+        const nextCommand = await command.process({
             from: user,
             chat: {
                 id: chatId,

@@ -20,5 +20,5 @@ export interface Command {
      * 
      * @returns Object that will process next input from the user
      */
-    process(message: Message): Command | undefined;
+    process(message: Message): Promise<Command | undefined>;
 }

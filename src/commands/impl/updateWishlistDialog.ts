@@ -11,7 +11,7 @@ export class UpdateWishlistDialog implements Command {
 
     }
 
-    process(message: Message): Command | undefined {
+    process(message: Message): Promise<Command | undefined> {
         const user = message.from;
         if (message.data.length === 0) {
             user.setWishlist(undefined);
@@ -22,6 +22,6 @@ export class UpdateWishlistDialog implements Command {
 
         CommandUtils.sendWishlistUpdate(user, this.context);
 
-        return undefined;
+        return Promise.resolve(undefined);
     }
 }

@@ -20,6 +20,7 @@ describe('HelpCommand', () => {
     const output = sinon.stubInterface<OutputManager>();
 
     const context: Context = {
+        service: sinon.stubInterface<any>(),
         users: users,
         events: events,
         output: output
@@ -29,10 +30,10 @@ describe('HelpCommand', () => {
         sinon.default.reset();
     });
 
-    it('should do nothing', () => {
+    it('should do nothing', async () => {
         const factory = new CommandsFactoryImpl(context);
         const command = factory.createCommand(undefined);
-        command.process({
+        await command.process({
             from: user,
             chat: {
                 id: chatId,

@@ -23,6 +23,7 @@ describe('FinishCommand', () => {
     const output = sinon.stubInterface<OutputManager>();
 
     const context: Context = {
+        service: sinon.stubInterface<any>(),
         users: users,
         events: events,
         output: output
@@ -32,7 +33,7 @@ describe('FinishCommand', () => {
         sinon.default.reset();
     });
 
-    it('should remove event', () => {
+    it('should remove event', async () => {
         const factory = new CommandsFactoryImpl(context);
         const command = factory.createCommand('/finish');
         
@@ -42,7 +43,7 @@ describe('FinishCommand', () => {
         event.getOwner.returns(userId);
         user.getId.returns(userId);
 
-        command.process({
+        await command.process({
             from: user,
             chat: {
                 id: chatId,
@@ -61,13 +62,13 @@ describe('FinishCommand', () => {
         expect(output.sendInfo.lastCall.args[1]).to.be.equal(InfoMessage.EventFinished);
     });
 
-    it('should check that event is present in chat', () => {
+    it('should check that event is present in chat', async () => {
         const factory = new CommandsFactoryImpl(context);
         const command = factory.createCommand('/finish');
         
         events.getEvent.withArgs(chatId).returns(undefined);
 
-        command.process({
+        await command.process({
             from: user,
             chat: {
                 id: chatId,
@@ -83,7 +84,7 @@ describe('FinishCommand', () => {
         expect(output.sendError.lastCall.args[1]).to.be.equal(ErrorMessage.NoEvent);
     });
 
-    it('should check that event is launched', () => {
+    it('should check that event is launched', async () => {
         const factory = new CommandsFactoryImpl(context);
         const command = factory.createCommand('/finish');
         
@@ -92,7 +93,7 @@ describe('FinishCommand', () => {
         event.getOwner.returns(userId);
         user.getId.returns(userId);
 
-        command.process({
+        await command.process({
             from: user,
             chat: {
                 id: chatId,
@@ -108,7 +109,7 @@ describe('FinishCommand', () => {
         expect(output.sendError.lastCall.args[1]).to.be.equal(ErrorMessage.EventIsNotLaunched);
     });
 
-    it('should check that command called by event owner', () => {
+    it('should check that command called by event owner', async () => {
         const factory = new CommandsFactoryImpl(context);
         const command = factory.createCommand('/finish');
         
@@ -117,7 +118,7 @@ describe('FinishCommand', () => {
         event.getOwner.returns(userId + 1);
         user.getId.returns(userId);
 
-        command.process({
+        await command.process({
             from: user,
             chat: {
                 id: chatId,

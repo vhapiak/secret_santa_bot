@@ -12,16 +12,16 @@ export class CancelCommand implements Command {
 
     }
 
-    process(message: Message): Command | undefined {
+    process(message: Message): Promise<Command | undefined> {
         const event = this.context.events.getEvent(message.chat.id);
         if (!event) {
             this.context.output.sendError(message.chat.id, ErrorMessage.NoEvent);
-            return undefined;
+            return Promise.resolve(undefined);
         }
 
         if (event.getOwner() !== message.from.getId()) {
             this.context.output.sendError(message.chat.id, ErrorMessage.PermissionDenied);
-            return undefined;
+            return Promise.resolve(undefined);
         }
 
         event.getParticipants().forEach(participant => {
@@ -35,6 +35,6 @@ export class CancelCommand implements Command {
         this.context.events.removeEvent(event.getId());
         this.context.output.sendInfo(message.chat.id, InfoMessage.EventCanceled);
 
-        return undefined;
+        return Promise.resolve(undefined);
     }
 }

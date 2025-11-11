@@ -11,14 +11,14 @@ export class ResetWishlistCommand implements Command {
 
     }
 
-    process(message: Message): Command | undefined {
+    process(message: Message): Promise<Command | undefined> {
         if (!message.chat.private) {
             this.context.output.sendError(message.chat.id, ErrorMessage.NotPrivateChat);
-            return undefined;
+            return Promise.resolve(undefined);
         }
         message.from.setWishlist(undefined);
         this.context.output.sendInfo(message.chat.id, InfoMessage.WishlistReset);
         CommandUtils.sendWishlistUpdate(message.from, this.context);
-        return undefined;
+        return Promise.resolve(undefined);
     }
 }

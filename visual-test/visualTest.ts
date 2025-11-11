@@ -16,6 +16,7 @@ import { ErrorMessage, InfoMessage, OutputManager, ResponseMessage } from '../sr
 import { User } from '../src/user/user';
 import { Event, EventState } from '../src/event/event';
 import { Button, Request } from '../src/buttons/button';
+import { TelegramService } from '../src/service/impl/telegramService';
 
 const users = sinon.stubInterface<UsersManager>();
 const firstUser = sinon.stubInterface<User>();
@@ -65,9 +66,9 @@ class StubCommand implements Command {
 
     }
 
-    process(message: Message): Command | undefined {
+    process(message: Message): Promise<Command | undefined> {
         this.processImpl(message);
-        return undefined;
+        return Promise.resolve(undefined);
     }
 
     private async processImpl(message: Message) {
@@ -163,6 +164,7 @@ function main(argv: string[]) {
     const botToken = argv[3];
 
     const telegram = new TelegramBot(botToken);
+    const service = new TelegramService(botName, telegram);
     const output = new OutputManagerImpl(botName, telegram, users);
 
     const commandsFactory = sinon.stubInterface<CommandsFactory>();
@@ -172,10 +174,15 @@ function main(argv: string[]) {
     buttonsFactory.createButton.returns(new StubButton(output));
     users.getUser.returns(firstUser);
 
+    const context = {
+        service: service,
+        users: users,
+        output: output,
+        events: sinon.stubInterface<any>(),
+    };
+
     const secretSantaBot = new SecretSantaBot(
-        telegram,
-        botName,
-        users,
+        context,
         commandsFactory,
         buttonsFactory
     );

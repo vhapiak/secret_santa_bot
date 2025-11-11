@@ -21,6 +21,7 @@ describe('HelpCommand', () => {
     const output = sinon.stubInterface<OutputManager>();
 
     const context: Context = {
+        service: sinon.stubInterface<any>(),
         users: users,
         events: events,
         output: output
@@ -30,8 +31,8 @@ describe('HelpCommand', () => {
         sinon.default.reset();
     });
 
-    function performTest(command: Command): void {
-        command.process({
+    async function performTest(command: Command) {
+        await command.process({
             from: user,
             chat: {
                 id: chatId,
@@ -47,15 +48,15 @@ describe('HelpCommand', () => {
         expect(output.sendInfo.lastCall.args[1]).to.be.equal(InfoMessage.Help);
     }
 
-    it('should send help message on /start', () => {
+    it('should send help message on /start', async () => {
         const factory = new CommandsFactoryImpl(context);
         const command = factory.createCommand('/start');
-        performTest(command);
+        await performTest(command);
     });
 
-    it('should send help message on /help', () => {
+    it('should send help message on /help', async () => {
         const factory = new CommandsFactoryImpl(context);
         const command = factory.createCommand('/help');
-        performTest(command);
+        await performTest(command);
     });
 });

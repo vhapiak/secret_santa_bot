@@ -10,14 +10,14 @@ export class StatusCommand implements Command {
 
     }
 
-    process(message: Message): Command | undefined {
+    process(message: Message): Promise<Command | undefined> {
         const event = this.context.events.getEvent(message.chat.id);
         if (!event) {
             this.context.output.sendError(message.chat.id, ErrorMessage.NoEvent);
-            return undefined;
+            return Promise.resolve(undefined);
         }
 
         this.context.output.sendEvent(message.chat.id, event);
-        return undefined;
+        return Promise.resolve(undefined);
     }
 }

@@ -11,27 +11,27 @@ export class UpdateBudget implements Command {
 
     }
 
-    process(message: Message): Command | undefined {
+    process(message: Message): Promise<Command | undefined> {
         if (message.args.length === 0) {
             this.context.output.sendError(message.chat.id, ErrorMessage.ArgumentExpected);
-            return undefined;
+            return Promise.resolve(undefined);
         }
 
         const event = this.context.events.getEvent(message.chat.id);
         if (!event) {
             this.context.output.sendError(message.chat.id, ErrorMessage.NoEvent);
-            return undefined;
+            return Promise.resolve(undefined);
         }
 
         if (event.getOwner() !== message.from.getId()) {
             this.context.output.sendError(message.chat.id, ErrorMessage.PermissionDenied);
-            return undefined;
+            return Promise.resolve(undefined);
         }
 
         event.setBudget(message.args.join(' '));
         this.context.output.sendInfo(message.chat.id, InfoMessage.BudgetUpdated);
         this.context.output.sendEvent(message.chat.id, event);
 
-        return undefined;
+        return Promise.resolve(undefined);
     }
 }

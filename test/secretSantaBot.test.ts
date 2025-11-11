@@ -2,7 +2,6 @@
 import { describe, it } from 'mocha';
 import { expect } from 'chai';
 import * as sinon from 'ts-sinon';
-import TelegramBot from 'node-telegram-bot-api';
 import { UsersManager } from '../src/user/usersManager';
 import { User } from '../src/user/user';
 import { CommandsFactory } from '../src/commands/commandsFactory';
@@ -10,6 +9,9 @@ import { Command } from '../src/commands/command';
 import { ButtonsFactory } from '../src/buttons/buttonsFactory';
 import { Button } from '../src/buttons/button';
 import { SecretSantaBot } from '../src/secretSantaBot';
+import { Service } from '../src/service/service';
+import { ErrorMessage, OutputManager, ResponseMessage } from '../src/output/outputManager';
+import { Context } from '../src/context';
 
 describe('SecretSantaBot', () => {
     const botName = 'TestBot';
@@ -21,7 +23,8 @@ describe('SecretSantaBot', () => {
     const firstName = 'Test';
     const lastName = 'User';
 
-    const telegram = sinon.stubInterface<TelegramBot>();
+    const service = sinon.stubInterface<Service>();
+    const output = sinon.stubInterface<OutputManager>();
     const users = sinon.stubInterface<UsersManager>();
     const user = sinon.stubInterface<User>();
     const commands = sinon.stubInterface<CommandsFactory>();
@@ -29,17 +32,28 @@ describe('SecretSantaBot', () => {
     const buttons = sinon.stubInterface<ButtonsFactory>();
     const button = sinon.stubInterface<Button>();
 
+    const context: Context = {
+        service: service,
+        users: users,
+        output: output,
+        events: sinon.stubInterface<any>(),
+    };
+
+    beforeEach(() => {
+        service.getBotName.returns(botName);
+    });
+
     afterEach(() => {
         sinon.default.reset();
     });
 
-    it('should process command', () => {
-        const bot = new SecretSantaBot(telegram, botName, users, commands, buttons);
+    it('should process command', async () => {
+        const bot = new SecretSantaBot(context, commands, buttons);
 
         users.getUser.withArgs(userId).returns(user);
         commands.createCommand.withArgs('/launch').returns(command);
         
-        bot.processTextMessage({
+        await bot.processTextMessage({
             message_id: messageId,
             chat: {
                 id: chatId,
@@ -76,13 +90,13 @@ describe('SecretSantaBot', () => {
         });
     });
 
-    it('should process default command', () => {
-        const bot = new SecretSantaBot(telegram, botName, users, commands, buttons);
+    it('should process default command', async () => {
+        const bot = new SecretSantaBot(context, commands, buttons);
 
         users.getUser.withArgs(userId).returns(user);
         commands.createCommand.withArgs(undefined).returns(command);
         
-        bot.processTextMessage({
+        await bot.processTextMessage({
             message_id: messageId,
             chat: {
                 id: chatId,
@@ -112,13 +126,13 @@ describe('SecretSantaBot', () => {
     });
 
     // in groups command may look like /command@BotName
-    it('should process command assigned to bot', () => {
-        const bot = new SecretSantaBot(telegram, botName, users, commands, buttons);
+    it('should process command assigned to bot', async () => {
+        const bot = new SecretSantaBot(context, commands, buttons);
 
         users.getUser.withArgs(userId).returns(user);
         commands.createCommand.withArgs('/launch').returns(command);
         
-        bot.processTextMessage({
+        await bot.processTextMessage({
             message_id: messageId,
             chat: {
                 id: chatId,
@@ -146,13 +160,13 @@ describe('SecretSantaBot', () => {
     });
 
     // in groups command may look like /command@NotOurBot
-    it('should skip processing of another bot command', () => {
-        const bot = new SecretSantaBot(telegram, botName, users, commands, buttons);
+    it('should skip processing of another bot command', async () => {
+        const bot = new SecretSantaBot(context, commands, buttons);
 
         users.getUser.withArgs(userId).returns(user);
         commands.createCommand.withArgs(undefined).returns(command);
         
-        bot.processTextMessage({
+        await bot.processTextMessage({
             message_id: messageId,
             chat: {
                 id: chatId,
@@ -179,14 +193,14 @@ describe('SecretSantaBot', () => {
         expect(command.process.called).to.be.true;
     });
 
-    it('should register user and bind chat', () => {
-        const bot = new SecretSantaBot(telegram, botName, users, commands, buttons);
+    it('should register user and bind chat', async () => {
+        const bot = new SecretSantaBot(context, commands, buttons);
 
         users.getUser.withArgs(userId).returns(undefined);
         users.addUser.withArgs(userId, `${firstName} ${lastName}`).returns(user);
         commands.createCommand.returns(command);
         
-        bot.processTextMessage({
+        await bot.processTextMessage({
             message_id: messageId,
             chat: {
                 id: chatId,
@@ -207,7 +221,7 @@ describe('SecretSantaBot', () => {
     });
 
     it('should skip process invalid message', () => {
-        const bot = new SecretSantaBot(telegram, botName, users, commands, buttons);
+        const bot = new SecretSantaBot(context, commands, buttons);
         
         bot.processTextMessage({
             message_id: messageId,
@@ -222,12 +236,12 @@ describe('SecretSantaBot', () => {
         expect(users.getUser.called).to.be.false;
     });
 
-    it('should notify about internal error during message processing', () => {
-        const bot = new SecretSantaBot(telegram, botName, users, commands, buttons);
+    it('should notify about internal error during message processing', async () => {
+        const bot = new SecretSantaBot(context, commands, buttons);
         
         users.getUser.throws('some error');
 
-        bot.processTextMessage({
+        await bot.processTextMessage({
             message_id: messageId,
             chat: {
                 id: chatId,
@@ -243,19 +257,20 @@ describe('SecretSantaBot', () => {
             }
         });
 
-        expect(telegram.sendMessage.called).to.be.true;
-        expect(telegram.sendMessage.lastCall.args[0]).to.be.equal(chatId);
+        expect(output.sendError.called).to.be.true;
+        expect(output.sendError.lastCall.args[0]).to.be.equal(chatId);
+        expect(output.sendError.lastCall.args[1]).to.be.equal(ErrorMessage.InternalError);
     });
 
-    it('should process chained commands', () => {
-        const bot = new SecretSantaBot(telegram, botName, users, commands, buttons);
+    it('should process chained commands', async () => {
+        const bot = new SecretSantaBot(context, commands, buttons);
 
         const nextCommand = sinon.stubInterface<Command>();
         users.getUser.withArgs(userId).returns(user);
         commands.createCommand.withArgs('/wishlist').returns(command);
-        command.process.returns(nextCommand);
+        command.process.returns(Promise.resolve(nextCommand));
         
-        bot.processTextMessage({
+        await bot.processTextMessage({
             message_id: messageId,
             chat: {
                 id: chatId,
@@ -280,9 +295,9 @@ describe('SecretSantaBot', () => {
         });
 
         commands.createCommand.throws('');
-        nextCommand.process.returns(undefined);
+        nextCommand.process.returns(Promise.resolve(undefined));
 
-        bot.processTextMessage({
+        await bot.processTextMessage({
             message_id: messageId,
             chat: {
                 id: chatId,
@@ -312,13 +327,13 @@ describe('SecretSantaBot', () => {
         });
     });
 
-    it('should process button', () => {
-        const bot = new SecretSantaBot(telegram, botName, users, commands, buttons);
+    it('should process button', async () => {
+        const bot = new SecretSantaBot(context, commands, buttons);
 
         users.getUser.withArgs(userId).returns(user);
         buttons.createButton.withArgs('toogle').returns(button);
         
-        bot.processCallbackQuery({
+        await bot.processCallbackQuery({
             id: queryId,
             chat_instance: '',
             from: {
@@ -348,13 +363,13 @@ describe('SecretSantaBot', () => {
         });
     });
 
-    it('should skip processing of unknown button', () => {
-        const bot = new SecretSantaBot(telegram, botName, users, commands, buttons);
+    it('should skip processing of unknown button', async () => {
+        const bot = new SecretSantaBot(context, commands, buttons);
 
         users.getUser.withArgs(userId).returns(user);
         buttons.createButton.returns(undefined);
         
-        bot.processCallbackQuery({
+        await bot.processCallbackQuery({
             id: queryId,
             chat_instance: '',
             from: {
@@ -378,13 +393,13 @@ describe('SecretSantaBot', () => {
         expect(button.onClick.called).to.be.false;
     });
 
-    it('should skip processing of invalid query', () => {
-        const bot = new SecretSantaBot(telegram, botName, users, commands, buttons);
+    it('should skip processing of invalid query', async () => {
+        const bot = new SecretSantaBot(context, commands, buttons);
 
         users.getUser.withArgs(userId).returns(user);
         buttons.createButton.returns(undefined);
         
-        bot.processCallbackQuery({
+        await bot.processCallbackQuery({
             id: queryId,
             chat_instance: '',
             from: {
@@ -400,13 +415,13 @@ describe('SecretSantaBot', () => {
         expect(button.onClick.called).to.be.false;
     });
 
-    it('should notify about internal error during query processing', () => {
-        const bot = new SecretSantaBot(telegram, botName, users, commands, buttons);
+    it('should notify about internal error during query processing', async () => {
+        const bot = new SecretSantaBot(context, commands, buttons);
 
         users.getUser.throws('some error');
         buttons.createButton.returns(button);
         
-        bot.processCallbackQuery({
+        await bot.processCallbackQuery({
             id: queryId,
             chat_instance: '',
             from: {
@@ -427,7 +442,8 @@ describe('SecretSantaBot', () => {
             }
         });
 
-        expect(telegram.answerCallbackQuery.called).to.be.true;
-        expect(telegram.answerCallbackQuery.lastCall.args[0]).to.be.equal(queryId);
+        expect(output.responseOnClick.called).to.be.true;
+        expect(output.responseOnClick.lastCall.args[0]).to.be.equal(queryId);
+        expect(output.responseOnClick.lastCall.args[1]).to.be.equal(ResponseMessage.InternalError);
     });
 });

@@ -10,8 +10,8 @@ export class HelpCommand implements Command {
 
     }
 
-    process(message: Message): Command | undefined {
+    process(message: Message): Promise<Command | undefined> {
         this.context.output.sendInfo(message.chat.id, InfoMessage.Help);
-        return undefined;
+        return Promise.resolve(undefined);
     }
 }
